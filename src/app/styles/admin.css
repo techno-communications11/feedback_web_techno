@@ -1,0 +1,52 @@
+.year-card:hover {
+  transform: translateY(-8px) scale(1.05);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.year-card:hover .year-glow {
+  opacity: 0.15;
+}
+
+.year-card:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+
+/* Shine animation on hover */
+.shine {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(30deg);
+  transition: all 0.8s ease;
+  opacity: 0;
+}
+
+.year-card:hover .shine {
+  animation: shine 1.5s forwards;
+}
+
+@keyframes shine {
+  0% {
+    opacity: 0;
+    transform: rotate(30deg) translateX(-30%);
+  }
+  100% {
+    opacity: 0.2;
+    transform: rotate(30deg) translateX(30%);
+  }
+}
+
+@media (max-width: 576px) {
+  .year-card {
+    min-height: 180px;
+  }
+}
