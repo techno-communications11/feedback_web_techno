@@ -2,8 +2,8 @@ export interface FormData {
   first_name: string;
   last_name: string;
   NTID: string;
-  Marketmanagerfirst_name: string;
-  Marketmanagerlast_name: string;
+  market_manager_firstname: string;
+  market_manager_lastname: string;
   HoursWorked: string;
   BoxesCompleted: string;
   AccessorySold: string;
@@ -29,8 +29,8 @@ export const employeeFields = [
 ];
 
 export const marketManagerFields = [
-  { name: "Marketmanagerfirst_name", text: "First Name" },
-  { name: "Marketmanagerlast_name", text: "Last Name" },
+  { name: "market_manager_firstname", text: "First Name" },
+  { name: "market_manager_lastname", text: "Last Name" },
 ];
 
 export const performanceFields = [
@@ -57,6 +57,6 @@ export const requiredFields = [
   "first_name",
   "last_name",
   "NTID",
-  "Marketmanagerfirst_name",
-  "Marketmanagerlast_name",
+  "market_manager_firstname",
+  "market_manager_lastname",
 ];

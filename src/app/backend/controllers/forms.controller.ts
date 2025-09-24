@@ -31,16 +31,16 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const searchParams = url.searchParams;
 
-    const first_name = searchParams.get("first_name");
-    const last_name = searchParams.get("last_name");
+    const applicant_uuid = searchParams.get("applicant_uuid");
     const month = searchParams.get("month");
     const year = searchParams.get("year");
+    console.log(applicant_uuid, month, year);
 
-    if (!first_name || !last_name || !month || !year) {
+    if (!applicant_uuid || !month || !year) {
       return NextResponse.json(
         {
           status: 400,
-          message: "firstName, lastName, month, and year are required",
+          message: "applicant uuid month, and year are required",
         },
         { status: 400 }
       );
@@ -48,8 +48,7 @@ export async function GET(req: NextRequest) {
 
     // Build a proper MonthData object
     const monthData: MonthData = {
-      first_name,
-      last_name,
+      applicant_uuid: applicant_uuid,
       month: Number(month),
       year: Number(year),
     };

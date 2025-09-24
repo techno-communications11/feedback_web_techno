@@ -15,8 +15,7 @@ export interface FormData {
 }
 
 export interface MonthData {
-  first_name: string;
-  last_name: string;
+  applicant_uuid: string;
   month: number;
   year: number;
 }

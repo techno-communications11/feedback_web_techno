@@ -12,8 +12,8 @@ export const login = async (credentials: Credentials) => {
 };
 
 export const register = async (RegisterUser: RegisterUser) => {
-  const {email,password,role,ntid}=RegisterUser;
-  const payload={email,password,role,ntid}
+  const {email,password,role,ntid,market}=RegisterUser;
+  const payload={email,password,role,ntid,market};
   const res = await fetch("/api/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

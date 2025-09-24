@@ -4,21 +4,20 @@ import EmployeeRow from "./EmployeeRow";
 
 interface Props {
   data: EmployeeForm[];
-  isLoading?: boolean; // Optional: for loading state
+  isLoading?: boolean;
 }
 
 const EmployeeTable: React.FC<Props> = ({ data, isLoading = false }) => {
-  // Optional: Show loading skeleton
   if (isLoading) {
     return (
-      <div className="table-responsive shadow-sm rounded bg-white">
-        <table className="table table-striped table-bordered mb-0">
-          <thead className="table-dark">
+      <div className="jira-table-container">
+        <table className="jira-table">
+          <thead>
             <tr>
-              <th colSpan={15} className="text-center py-3">
-                <div className="spinner-border text-primary" role="status">
-                  <span className="visually-hidden">Loading...</span>
-                </div>
+              <th colSpan={15} className="text-center py-4">
+                <div className="d-flex justify-content-center align-items-center" style={{ height: '100px' }}>
+        <div className="spinner-border"></div>
+      </div>
               </th>
             </tr>
           </thead>
@@ -27,18 +26,17 @@ const EmployeeTable: React.FC<Props> = ({ data, isLoading = false }) => {
     );
   }
 
-  // Optional: Show empty state
+  console.log(data, "data in table component"); 
+
   if (data.length === 0) {
     return (
-      <div className="table-responsive shadow-sm rounded bg-white">
-        <table className="table table-striped table-bordered mb-0">
-          <thead className="table-dark">
+      <div className="jira-table-container">
+        <table className="jira-table">
+          <thead>
             <tr>
-              <th colSpan={15} className="text-center py-4">
-                <div className="text-muted">
-                  <i className="bi bi-clipboard-x me-2"></i>
-                  No employee records found.
-                </div>
+              <th colSpan={15} className="text-center py-5 text-muted">
+                <i className="bi bi-clipboard-x me-2"></i>
+                No records found.
               </th>
             </tr>
           </thead>
@@ -48,53 +46,26 @@ const EmployeeTable: React.FC<Props> = ({ data, isLoading = false }) => {
   }
 
   return (
-    <div className="table-responsive shadow-sm rounded border-0">
-      <table className="table table-striped table-bordered table-hover align-middle mb-0">
-        {/* PRO TIP: Use thead-light or thead-dark with subtle gradient */}
-        <thead className="table-dark">
+    <div className="jira-table-container">
+      <table className="jira-table">
+        <thead>
           <tr>
-            
-            <th scope="col" className="fw-bold text-nowrap text-center">
-              First Name
-            </th>
-            <th scope="col" className="fw-bold text-nowrap text-center">
-              Last Name
-            </th>
-            <th scope="col" className="fw-bold text-nowrap text-center">
-              NTID
-            </th>
-            <th scope="col" className="fw-bold text-nowrap text-center">
-              Manager Name
-            </th>
-           
-            <th scope="col" className="fw-bold text-nowrap text-center">
-              Hours Worked
-            </th>
-            <th scope="col" className="fw-bold text-nowrap text-center">
-              Boxes Completed
-            </th>
-            <th scope="col" className="fw-bold text-nowrap text-center">
-              Accessories Sold
-            </th>
-            <th scope="col" className="fw-bold text-nowrap text-center">
-              Feature Revenue
-            </th>
-            <th scope="col" className="fw-bold text-nowrap text-center">
-              CSAT
-            </th>
-            <th scope="col" className="fw-bold text-nowrap text-center">
-              Day 155 Activation
-            </th>
-            <th scope="col" className="fw-bold text-nowrap text-center">
-              Day 155 Future MRC
-            </th>
-            <th scope="col" className="fw-bold text-nowrap text-center">
-              Comments
-            </th>
-            
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>NTID</th>
+            <th>Manager Name</th>
+            <th>Hours Worked</th>
+            <th>Boxes Completed</th>
+            <th>Accessories Sold</th>
+            <th>Feature Revenue </th>
+            <th>CSAT</th>
+            <th>D155 Act.</th>
+            <th>D155 MRC</th>
+            <th>Comments</th>
+            <th>Created at</th>
           </tr>
         </thead>
-        <tbody className="bg-white">
+        <tbody>
           {data.map((emp) => (
             <EmployeeRow key={emp.form_id} emp={emp} />
           ))}

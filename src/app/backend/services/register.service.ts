@@ -15,6 +15,7 @@ export const createUser = async (user: UserData) => {
       hashedPassword,
       user.role || "employee", // default role
       user.ntid || "",
+      user.market || null,
     ];
     console.log(values);
 
@@ -27,6 +28,8 @@ export const createUser = async (user: UserData) => {
         applicant_uuid,
         email: user.email,
         role: user.role || "employee",
+        ntid: user.ntid || "",
+        market: user.market || null,
       },
     };
   } catch (error: any) {

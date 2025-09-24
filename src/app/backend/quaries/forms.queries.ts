@@ -27,11 +27,10 @@ export const GET_FULL_FORM_COMMENTS_BY_USER_MONTH_YEAR = `
   FROM form_data f
   LEFT JOIN comments c 
     ON f.form_id = c.form_id
-  WHERE f.first_name = ?
-    AND f.last_name = ?
+  WHERE f.applicant_uuid = ?
     AND MONTH(f.created_at) = ?
     AND YEAR(f.created_at) = ?
-  ORDER BY f.created_at DESC, c.created_at DESC Limit 1;
+  ORDER BY f.created_at DESC, c.created_at DESC LIMIT 1 ;
 `;
 
 export const GET_FULL_FORM_DETAILS_BY_APPLICANT_UUUID = `
@@ -67,4 +66,16 @@ export const GET_YEAR_FROM_FORMS = `
 
 export const GET_USERNAMES_FROM_FORMS = `
   SELECT DISTINCT first_name, last_name, applicant_uuid,ntid FROM form_data ORDER BY first_name, last_name;
+`;
+export const GET_USERNAMES_FROM_FORMS_BY_MARKET = `
+  SELECT DISTINCT 
+    f.first_name,
+    f.last_name,
+    f.applicant_uuid,
+    f.ntid
+FROM form_data f
+JOIN users u ON f.ntid = u.ntid
+WHERE u.market_id = ?
+ORDER BY f.first_name, f.last_name;
+
 `;

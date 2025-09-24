@@ -17,8 +17,8 @@ function Page() {
     first_name: "",
     last_name: "",
     NTID: "",
-    Marketmanagerfirst_name: "",
-    Marketmanagerlast_name: "",
+    market_manager_firstname: "",
+    market_manager_lastname: "",
     HoursWorked: "",
     BoxesCompleted: "",
     AccessorySold: "",
@@ -46,6 +46,7 @@ function Page() {
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    // alert("Form submission is disabled in the demo.");
     e.preventDefault();
     setIsSubmitting(true);
     const validationErrors = validation(formData);
@@ -57,14 +58,14 @@ function Page() {
 
       if (result.status === 200 || result.status === 201) {
         setSuccessMessage(result.message);
-        console.log("Server Response:", result.data);
+        // console.log("Server Response:", result.data);
         // Reset form on successful submission
         setFormData({
           first_name: "",
           last_name: "",
           NTID: "",
-          Marketmanagerfirst_name: "",
-          Marketmanagerlast_name: "",
+          market_manager_firstname: "",
+          market_manager_lastname: "",
           HoursWorked: "",
           BoxesCompleted: "",
           AccessorySold: "",

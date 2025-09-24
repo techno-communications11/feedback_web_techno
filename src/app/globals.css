@@ -90,3 +90,62 @@ h6 {
   color: #555 !important;
   margin-bottom: 0.3rem !important;
 }
+
+
+/* JIRA-STYLE TABLES */
+.jira-table-container {
+  border: 1px solid #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.jira-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.775rem;
+  line-height: 1.4;
+  color: #333;
+  background: white;
+}
+
+.jira-table th {
+  background-color: #f4f5f7;
+  font-weight: 500;
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 2px solid #e0e0e0;
+  color: #5e6c84;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.jira-table td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #e0e0e0;
+  vertical-align: middle;
+}
+
+.jira-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.jira-table-row:hover {
+  background-color: #f9f9fa;
+}
+
+.jira-table-row:hover td {
+  background-color: #f9f9fa;
+}
+
+/* Optional: subtle focus ring if needed */
+.jira-table-row:focus-within {
+  outline: 2px solid #0052cc;
+  outline-offset: -1px;
+}
+
+/* Monospace for IDs or codes */
+.font-monospace {
+  font-family: var(--bs-font-monospace);
+}
+

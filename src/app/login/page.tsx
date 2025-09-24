@@ -47,6 +47,7 @@ const Login: React.FC<LoginProps> = () => {
       const loginResponse = await loginService(credentials); 
       // console.log(loginResponse.data,'ress')
       saveAuth(loginResponse.data.token, loginResponse.data.user);
+ 
 
       router.replace(roleRoutes[loginResponse.data.user.role]);
     } catch (err: any) {

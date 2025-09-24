@@ -50,12 +50,10 @@ export const createForm = async (form: FormData): Promise<ApiResponse> => {
         : 0,
     ];
 
-    console.log("Inserting form with values:", formValues);
 
     const [formResult]: any = await connection.execute(INSERT_FORM, formValues);
 
     const form_id = formResult.insertId; // ✅ capture generated form_id
-    console.log("Form inserted with ID:", form_id);
 
     // 3️⃣ Insert notification with correct form_id
     const notificationValues = [
@@ -193,7 +191,7 @@ export const createForm = async (form: FormData): Promise<ApiResponse> => {
 
 export const getFormCommentsByUserMonthYear = async (form: MonthData) => {
   try {
-    const values = [form.first_name, form.last_name, form.month, form.year];
+    const values = [form.applicant_uuid, form.month, form.year];
 
     const [rows] = await pool.execute(
       GET_FULL_FORM_COMMENTS_BY_USER_MONTH_YEAR,

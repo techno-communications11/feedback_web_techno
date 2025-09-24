@@ -2,22 +2,23 @@
 import React, { useEffect, useState } from "react";
 import { fetchFormComments, Feedback } from "../app/services/fetchUserFeedback";
 
+
 interface CurrentMonthCommentProps {
-  first_name: string;
-  last_name: string;
+ applicant_uuid?: string;
   month: number;
   year: number;
 }
 
 const CurrentMonthComment: React.FC<CurrentMonthCommentProps> = ({
-  first_name,
-  last_name,
+ applicant_uuid,
   month,
   year,
+ setFormId 
 }) => {
   const [data, setData] = useState<Feedback[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
 
   const loadFeedbackData = async () => {
     try {
@@ -25,13 +26,15 @@ const CurrentMonthComment: React.FC<CurrentMonthCommentProps> = ({
       setError(null);
 
       const result = await fetchFormComments({
-        first_name,
-        last_name,
+       applicant_uuid: applicant_uuid || "",
         month,
         year,
       });
-      
+
       setData(result.data);
+      if (result.data.length > 0 && setFormId) {
+        setFormId(result.data[0].form_id); // assuming form_id is part of Feedback
+      }
     } catch (err: any) {
       setError(err.message || "Something went wrong");
     } finally {
@@ -40,18 +43,19 @@ const CurrentMonthComment: React.FC<CurrentMonthCommentProps> = ({
   };
 
   useEffect(() => {
-    if (first_name && last_name) {
+    if (applicant_uuid) {
       loadFeedbackData();
     }
-  }, [first_name, last_name, month, year]);
+  }, [applicant_uuid, month, year]);
 
   return (
     <div className="m-4">
       {isLoading && (
-        <div className="d-flex justify-content-center my-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ height: "100px" }}
+        >
+          <div className="spinner-border"></div>
         </div>
       )}
 
@@ -82,9 +86,7 @@ const CurrentMonthComment: React.FC<CurrentMonthCommentProps> = ({
               <div className="card shadow-sm border-0">
                 <div className="card-header bg-light d-flex justify-content-between align-items-center">
                   <div>
-                    <strong className="text-primary">
-                      Feedback #{feedback.comment_id}
-                    </strong>
+                    <strong className="text-primary">Feedback #</strong>
                     <br />
                     <small className="text-muted">
                       {new Date(feedback.created_at).toLocaleString()}
@@ -167,10 +169,10 @@ const CurrentMonthComment: React.FC<CurrentMonthCommentProps> = ({
                           <strong>Created:</strong>{" "}
                           {new Date(feedback.created_at).toLocaleString()}
                         </li>
-                        <li>
+                        {/* <li>
                           <strong>Updated:</strong>{" "}
                           {new Date(feedback.updated_at).toLocaleString()}
-                        </li>
+                        </li> */}
                       </ul>
                     </div>
                   </div>
@@ -179,10 +181,19 @@ const CurrentMonthComment: React.FC<CurrentMonthCommentProps> = ({
                   <div className="mt-4 p-3 bg-light border rounded">
                     <h6 className="mb-2 fw-bold text-dark">
                       <i className="bi bi-chat-quote me-2"></i>
-                      Comment
+                       User Comment
                     </h6>
                     <p className="mb-0">
                       {feedback.comment_text || "No comment provided."}
+                    </p>
+                  </div>
+                  <div className="mt-4 p-3 bg-light border rounded">
+                    <h6 className="mb-2 fw-bold text-dark">
+                      <i className="bi bi-chat-quote me-2"></i>
+                      manager Comment
+                    </h6>
+                    <p className="mb-0">
+                      {feedback.manager_comment || "No comment provided."}
                     </p>
                   </div>
                 </div>

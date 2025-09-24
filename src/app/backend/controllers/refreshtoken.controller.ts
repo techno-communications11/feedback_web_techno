@@ -19,6 +19,7 @@ export class AuthController {
         applicant_uuid: payload.applicant_uuid,
         email: payload.email,
         role:payload.role,
+        market_id:payload.market_id
       });
 
       return Response.json({ token: newAccessToken });

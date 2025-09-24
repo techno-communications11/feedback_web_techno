@@ -9,10 +9,14 @@ const roleRoutes: Record<string, string> = {
   market_manager: "/market_manager",
 };
 
-export default function PublicRoute({ children }: { children: React.ReactNode }) {
+export default function PublicRoute({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { token, user, loading } = useAuth();
   const router = useRouter();
-   console.log(user,"rrr");
+  console.log(user, "rrr");
 
   useEffect(() => {
     if (!loading && token && user?.role) {
@@ -20,7 +24,15 @@ export default function PublicRoute({ children }: { children: React.ReactNode })
     }
   }, [token, user, loading, router]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading)
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{ height: "100px" }}
+      >
+        <div className="spinner-border"></div>
+      </div>
+    );
 
   return <>{!token && children}</>;
 }

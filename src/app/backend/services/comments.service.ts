@@ -1,6 +1,6 @@
-import { INSERT_COMMENT, GET_COMMENTS_BY_APPLICANT_UUID, GET_COMMENTS_BY_FORM_ID } from "../quaries/comments.queries";
+import { INSERT_COMMENT, GET_COMMENTS_BY_APPLICANT_UUID, GET_COMMENTS_BY_FORM_ID,UPDATE_COMMENT_TEXT_BY_MANAGER } from "../quaries/comments.queries";
 import { ApiResponse } from "../types/form.types";
-import { CommentData } from "../types/comments.types"; 
+import { CommentData, updateCommentData } from "../types/comments.types"; 
 import { pool } from "@/lib/db";
 
 export const addComment = async (comment: CommentData, version: number = 1): Promise<ApiResponse> => {
@@ -63,4 +63,31 @@ export const getComment = async (applicant_uuid: string): Promise<ApiResponse> =
   finally {
     connection.release();
   }
+};
+
+export const updateComment = async (comment: updateCommentData & { comment_id?: number }): Promise<ApiResponse> => {
+  try {
+    if (!comment.comment_id) {
+      return {
+        status: 400,
+        message: "comment_id is required for update",
+      };
+    }
+    const values = [
+      comment.comment_text,
+      comment.comment_id,
+    ];
+    const [result] = await pool.execute(UPDATE_COMMENT_TEXT_BY_MANAGER, values);
+    return {
+      status: 200,
+      message: "Comment updated successfully",
+      data: { ...comment },
+    };
+  } catch (error: any) {
+    return {
+      status: 500,
+      message: "Failed to update comment",
+      error: error.message || "Unknown error",
+    };
+  } 
 };

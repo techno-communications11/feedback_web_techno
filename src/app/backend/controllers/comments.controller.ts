@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { addComment, getComment } from "../services/comments.service";
-import { CommentData } from "../types/comments.types";
+import { addComment, getComment,updateComment } from "../services/comments.service";
+import { CommentData,updateCommentData } from "../types/comments.types";
 
 export async function POST(req: NextRequest) {
   try {
@@ -58,3 +58,37 @@ export async function GET(req: NextRequest) {
     );
   }
 }
+
+export async function PUT(req: NextRequest) {
+  try {
+    const body: updateCommentData & { comment_id?: number } = await req.json();
+    console.log("Received Update Comment Data:", body);
+    if (
+      !body.comment_text ||
+      !body.comment_id
+    ) {
+      return NextResponse.json(
+        { status: 400, message: "Invalid comment data" },
+        { status: 400 }
+      );
+    }
+    // Update comment
+    const updatedComment = await updateComment(body);
+
+    return NextResponse.json(
+      {
+        status: 200,
+        message: "Comment updated successfully",
+        data: updatedComment.data,
+      },
+      { status: 200 }
+    );
+  } catch (error: any) {
+    console.error(error);
+    return NextResponse.json(
+      { status: 500, message: "Server error", error: error.message },
+      { status: 500 }
+    );
+  }
+}
+

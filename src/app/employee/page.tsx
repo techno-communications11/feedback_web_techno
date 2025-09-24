@@ -5,16 +5,29 @@ import ProtectedRoute from "../../context/ProtectedRoute";
 import { useAuth } from "@/context/AuthContext";
 import { fetchEmployeeData, EmployeeForm } from "../services/employeeService";
 import EmployeeTable from "@/components/EmployeeTable";
-
-// Or use pure Bootstrap classes if not using React-Bootstrap
+import { DateRangePicker } from "rsuite";
+import "rsuite/dist/rsuite.min.css";
 
 export default function EmployeePage() {
   const { user, loading: authLoading } = useAuth();
+
+  const [allData, setAllData] = useState<EmployeeForm[]>([]);
   const [data, setData] = useState<EmployeeForm[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null] | null>(
+    null
+  );
+function stripTimeUTC(d: Date | string): number {
+  const date = typeof d === "string" ? new Date(d) : d;
+  return Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+}
+ console.log(dateRange, "dateRange");
+ console.log(data, "data after filter");
+ console.log(allData, "allData");
 
-  // Wrap fetch in useCallback for retry capability
+
+  // Fetch employee data
   const fetchData = useCallback(async () => {
     if (!user?.applicant_uuid) return;
 
@@ -23,6 +36,7 @@ export default function EmployeePage() {
 
     try {
       const result = await fetchEmployeeData(user.applicant_uuid);
+      setAllData(result || []);
       setData(result || []);
     } catch (err) {
       console.error("Failed to fetch employee data:", err);
@@ -34,18 +48,47 @@ export default function EmployeePage() {
     }
   }, [user?.applicant_uuid]);
 
-  // Initial load + dependency effect
+  // Initial load
   useEffect(() => {
     if (!authLoading && user?.applicant_uuid) {
       fetchData();
     } else if (!authLoading && !user) {
       setLoading(false);
-      // ProtectedRoute should handle this, but we set empty state
+      setAllData([]);
       setData([]);
     }
   }, [authLoading, user, fetchData]);
 
-  // If auth is loading, show full-page loader
+  // Filter by date range
+ useEffect(() => {
+  if (!dateRange || dateRange.length !== 2 || !dateRange[0] || !dateRange[1]) {
+    setData(allData);
+    return;
+  }
+
+  const [start, end] = dateRange;
+
+  const startUTC = stripTimeUTC(start);
+  const endUTC = stripTimeUTC(end);
+
+  const filtered = allData.filter((item) => {
+    const createdAtUTC = stripTimeUTC(item.created_at);
+    const isInRange = createdAtUTC >= startUTC && createdAtUTC <= endUTC;
+
+    // 👇 Add this for debugging
+    console.log(
+      `Record created: ${item.created_at} → UTC Date: ${new Date(createdAtUTC).toISOString().split('T')[0]}, In Range: ${isInRange}`
+    );
+
+    return isInRange;
+  });
+
+  console.log("Filtered Data Count:", filtered.length);
+  setData(filtered);
+}, [dateRange, allData]);
+
+
+  // Auth loading UI
   if (authLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center vh-100">
@@ -59,24 +102,27 @@ export default function EmployeePage() {
     );
   }
 
-  // Show error state
+  // Error state
   if (error) {
     return (
       <ProtectedRoute>
         <div className="container mt-5">
           <div className="row justify-content-center">
             <div className="col-lg-8">
-              <Alert variant="danger" className="text-center shadow-sm">
-                <Alert.Heading>⚠️ Oops! Something went wrong</Alert.Heading>
+              <div className="alert alert-danger text-center shadow-sm">
+                <h4 className="alert-heading">⚠️ Oops! Something went wrong</h4>
                 <p>{error}</p>
                 <hr />
                 <div className="d-grid">
-                  <Button onClick={() => fetchData()} variant="outline-danger">
+                  <button
+                    onClick={() => fetchData()}
+                    className="btn btn-outline-danger"
+                  >
                     <i className="bi bi-arrow-clockwise me-2"></i>
                     Retry Loading Data
-                  </Button>
+                  </button>
                 </div>
-              </Alert>
+              </div>
             </div>
           </div>
         </div>
@@ -84,7 +130,7 @@ export default function EmployeePage() {
     );
   }
 
-  // Show empty state (no data)
+  // Empty state
   if (!loading && data.length === 0) {
     return (
       <ProtectedRoute>
@@ -97,59 +143,57 @@ export default function EmployeePage() {
             <p className="text-muted">
               There are no records associated with your account.
             </p>
-            <button
-              className="btn btn-outline-primary mt-3"
-              onClick={() => fetchData()}
-            >
-              <i className="bi bi-arrow-clockwise me-2"></i>
-              Refresh
-            </button>
           </div>
         </div>
       </ProtectedRoute>
     );
   }
 
+  // Main UI
   return (
     <ProtectedRoute allowedRoles={["employee"]}>
-      <div className="container py-5">
-        {/* Header with subtle animation */}
-        <div className="text-center mb-5 animate__animated animate__fadeIn">
-          <h1 className="display-5 fw-bold text-primary mb-3">
-            Employee Records
-          </h1>
-          <p className="lead text-muted">
-            Welcome back, <strong>{user?.first_name || "Team Member"}</strong>{" "}
-            👋
-          </p>
-          <div className="border-bottom border-primary-subtle w-25 mx-auto"></div>
-        </div>
-
-        {/* Loading State */}
-        {loading ? (
-          <div className="d-flex justify-content-center my-5">
-            <div className="text-center">
-              <div className="spinner-border text-primary" role="status">
-                <span className="visually-hidden">
-                  Loading employee data...
-                </span>
-              </div>
-              <p className="mt-3 text-muted">Fetching your records...</p>
+      <div className="container-fluid py-4 px-5">
+        {/* Header */}
+        <div className="container">
+          <div className="d-flex mb-4 pb-3 border-bottom border-muted align-items-center">
+            <div className="col-4">
+              <h1 className="h2 fw-bold text-dark mb-1">Employee Records</h1>
+              <p className="text-muted mb-0">
+                Welcome back,{" "}
+                <strong>{user?.first_name || "Team Member"}</strong> 👋
+              </p>
+            </div>
+            <div className="me-auto col-8" style={{ maxWidth: "300px" }}>
+              <span className="text-muted me-2">Filter by Date:</span>
+              <DateRangePicker
+                placeholder="Select Date Range"
+                style={{ width: "100%" }}
+                onChange={setDateRange}
+              />
             </div>
           </div>
+        </div>
+
+        {/* Loading or Table */}
+        {loading ? (
+          <div className="text-center py-5">
+            <div className="spinner-border text-primary" role="status">
+              <span className="visually-hidden">Loading employee data...</span>
+            </div>
+            <p className="mt-3 text-muted">Fetching your records...</p>
+          </div>
         ) : (
-          /* Table with fade-in animation */
-          <div className="animate__animated animate__fadeInUp">
-            <div className="bg-white p-4 rounded shadow-sm border">
-              <div className="d-flex justify-content-between align-items-center mb-4">
-                <h5 className="mb-0 fw-bold text-dark">
-                  <i className="bi bi-table me-2"></i>
-                  Employee Performance Records
-                </h5>
-                <span className="badge bg-primary rounded-pill px-3 py-2">
-                  {data.length} record{data.length !== 1 ? "s" : ""}
-                </span>
-              </div>
+          <div className="fade-in">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h2 className="h5 fw-bold text-dark m-0">
+                Employee  Records
+              </h2>
+              <span className="badge bg-light text-dark border px-3 py-2 fw-normal">
+                {data.length} record{data.length !== 1 ? "s" : ""}
+              </span>
+            </div>
+
+            <div className="jira-table-container">
               <EmployeeTable data={data} isLoading={false} />
             </div>
           </div>

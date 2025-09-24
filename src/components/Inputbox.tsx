@@ -1,14 +1,20 @@
 import React from "react";
 
+interface Option {
+  id: string | number;
+  name: string;
+}
+
 interface InputBoxProps {
   type: string;
-  text: string;
+  text?: string;
   name: string;
   value: string;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (e: any) => void;
   error?: string;
   disabled?: boolean;
   required?: boolean;
+  options?: Option[]; // for dropdown
 }
 
 function Inputbox({
@@ -20,9 +26,27 @@ function Inputbox({
   error,
   disabled = false,
   required = false,
+  options = [],
 }: InputBoxProps) {
-  // 👇 Dynamically assign class based on size
-  // const sizeClass = size === "xs" ? "form-control-xs" : "form-control-sm";
+  if (type === "dropdown") {
+    return (
+      <select
+        name={name}
+        value={value}
+        onChange={(e) => onChange?.(e.target.value)}
+        className={`form-select ${error ? "is-invalid" : ""}`}
+        disabled={disabled}
+        required={required}
+      >
+        <option value="">{text || "Select..."}</option>
+        {options.map((opt) => (
+          <option key={opt.id} value={opt.id}>
+            {opt.name}
+          </option>
+        ))}
+      </select>
+    );
+  }
 
   return (
     <input
@@ -31,10 +55,8 @@ function Inputbox({
       name={name}
       id={name}
       value={value}
-      onChange={onChange}
-      className={`form-control  ${error ? "is-invalid" : ""}`}
-      aria-describedby={`${name}Error`}
-      aria-invalid={!!error}
+      onChange={(e) => onChange?.(e)}
+      className={`form-control ${error ? "is-invalid" : ""}`}
       disabled={disabled}
       required={required}
     />

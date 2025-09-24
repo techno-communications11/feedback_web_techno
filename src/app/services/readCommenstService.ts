@@ -16,6 +16,8 @@ export const fetchComments = async (applicant_uuid?: string): Promise<Comment[]>
     const res = await fetch(`/api/comments?applicant_uuid=${applicant_uuid}`);
     const data = await res.json();
 
+     console.log(data, "comments data from fetchComments");
+
     if (Array.isArray(data.data)) {
       // Sort by created_at descending
       return data.data.sort(

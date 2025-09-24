@@ -7,20 +7,18 @@ export interface Feedback {
 }
 
 interface FetchFormCommentsProps {
-  first_name: string;
-  last_name: string;
+ applicant_uuid: string;
   month: number;
   year: number;
 }
 
 export async function fetchFormComments({
-  first_name,
-  last_name,
+ applicant_uuid,
   month,
   year,
 }: FetchFormCommentsProps): Promise<Feedback[]> {
-  const response = await fetch(
-    `/api/form?first_name=${first_name}&last_name=${last_name}&month=${month}&year=${year}`,
+   const response = await fetch(
+    `/api/form?applicant_uuid=${applicant_uuid}&month=${month}&year=${year}`,
     { headers: { "Content-Type": "application/json" } }
   );
   // console.log(response);

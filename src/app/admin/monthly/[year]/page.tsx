@@ -8,11 +8,14 @@ import { colors, Months } from "../../admin.constants";
 import { encodeId, decodeId } from "@/lib/hashids";
 import ProtectedRoute from "@/context/ProtectedRoute";
 import { BiArrowBack } from "react-icons/bi";
+import { useAuth } from "@/context/AuthContext";
 
 function Page() {
+  const { user } = useAuth();
   const router = useRouter();
   const params = useParams();
   const encodedyear = params?.year;
+
 
   const handleMonthClick = (monthName: string) => {
     if (!encodedyear) return;
@@ -21,12 +24,13 @@ function Page() {
         (m) => m.Month.toLowerCase() === monthName.toLowerCase()
       ) + 1;
     const encodedMonth = encodeId(monthNumber);
-
-    router.push(`/admin/monthly/${encodedyear}/${encodedMonth}`);
+    const baseroute =
+      user?.role === "market_manager" ? "market_manager" : "admin";
+    router.push(`/${baseroute}/monthly/${encodedyear}/${encodedMonth}`);
   };
 
   return (
-    <ProtectedRoute allowedRoles={["admin"]}>
+    <ProtectedRoute allowedRoles={["admin", "market_manager"]}>
       <div
         className="container py-1 d-flex flex-column justify-content-between"
         style={{ minHeight: "90vh" }}
@@ -38,7 +42,7 @@ function Page() {
           onClick={() => window.history.back()}
         >
           <BiArrowBack className="me-2" />
-          Back to Month Selection
+          Back to Year Selection
         </button>
 
         {/* Header */}

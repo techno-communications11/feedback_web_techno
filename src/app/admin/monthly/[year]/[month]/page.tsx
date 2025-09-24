@@ -9,6 +9,9 @@ import ProtectedRoute from "@/context/ProtectedRoute";
 import { BiArrowBack } from "react-icons/bi";
 import { FaUser } from "react-icons/fa";
 import Commentsdata from "../../../../admin/commentsdata/page";
+import MarketManagerComment from "@/components/MarketManagerComment";
+import { useAuth } from "@/context/AuthContext";
+import { form } from "framer-motion/client";
 
 interface User {
   applicant_uuid: string;
@@ -18,17 +21,19 @@ interface User {
 }
 
 function Page() {
+  const { user } = useAuth();
   const params = useParams();
   const year = decodeId(params.year);
   const month = decodeId(params.month);
   const monthObj = Months.find((m) => m.id === month);
   const monthName = monthObj ? monthObj.Month : "Unknown";
+  const [form_id, setFormId] = useState<number | null>(null);
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  console.log(selectedUser, "selectedUser");
+  
 
   return (
-    <ProtectedRoute allowedRoles={["admin"]}>
+    <ProtectedRoute allowedRoles={["admin", "market_manager"]}>
       <div className="row g-4">
         {/* Sidebar — Sticky on Desktop */}
         <div className="col-lg-3 col-md-4">
@@ -75,14 +80,20 @@ function Page() {
                     </h5>
                     <small className="text-muted">Selected Employee</small>
                   </div>
+                  {user?.role === "market_manager" && (
+                    <div className="ms-auto">
+                      
+                      <MarketManagerComment form_id={form_id} />
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-3">
                   <CurrentMonthComment
-                    first_name={selectedUser.first_name}
-                    last_name={selectedUser.last_name}
+                    applicant_uuid={selectedUser.applicant_uuid}
                     month={month}
                     year={year}
+                    setFormId={setFormId}
                   />
                 </div>
               </div>
@@ -121,7 +132,11 @@ function Page() {
               {/* Placeholder for future content */}
               <div className="list-group list-group-flush">
                 <div className="list-group-item border-0 ps-0">
-                  <Commentsdata applicant_uuid={selectedUser?.applicant_uuid} first_name={selectedUser?.first_name} last_name={selectedUser?.last_name} />
+                  <Commentsdata
+                    applicant_uuid={selectedUser?.applicant_uuid}
+                    first_name={selectedUser?.first_name}
+                    last_name={selectedUser?.last_name}
+                  />
                 </div>
               </div>
             </div>

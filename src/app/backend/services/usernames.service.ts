@@ -1,10 +1,18 @@
 import { ApiResponse } from "../types/form.types";
 import { pool } from "@/lib/db";
-import { GET_USERNAMES_FROM_FORMS } from "../quaries/forms.queries";
+import { GET_USERNAMES_FROM_FORMS, GET_USERNAMES_FROM_FORMS_BY_MARKET } from "../quaries/forms.queries";
 
-export const GetUserNames = async (): Promise<ApiResponse> => {
+export const GetUserNames = async ({ market_id }: { market_id?: number | string }): Promise<ApiResponse> => {
   try {
-    const [result] = await pool.execute(GET_USERNAMES_FROM_FORMS);
+    let result;
+
+    if (market_id !==0) {
+      // market_id exists → filter by market
+      [result] = await pool.execute(GET_USERNAMES_FROM_FORMS_BY_MARKET, [market_id]);
+    } else {
+      // no market_id → fetch all
+      [result] = await pool.execute(GET_USERNAMES_FROM_FORMS);
+    }
 
     return {
       status: 200,

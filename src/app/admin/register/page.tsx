@@ -3,8 +3,9 @@
 import React, { useState, useEffect } from "react";
 import Inputbox from "@/components/Inputbox";
 import ProtectedRoute from "@/context/ProtectedRoute";
-import { RegisterUser } from "@/app/login/auth.types";
+import { RegisterUser, RegisterErrors } from "@/app/login/auth.types";
 import { register } from "@/app/services/loginservice";
+import MarketDropdown from "@/components/MarketDropdown";
 
 // Initial form state
 const initialState: RegisterUser = {
@@ -12,6 +13,7 @@ const initialState: RegisterUser = {
   password: "",
   confirmPassword: "",
   ntid: "",
+  market: 0,
   role: "",
 };
 
@@ -24,7 +26,7 @@ const capitalize = (str: string) =>
 
 const RegisterPage = () => {
   const [formData, setFormData] = useState<RegisterUser>(initialState);
-  const [formErrors, setFormErrors] = useState<Partial<RegisterUser>>({});
+  const [formErrors, setFormErrors] = useState<Partial<RegisterErrors>>({});
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -44,14 +46,14 @@ const RegisterPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
 
     // Clear error for this field on change
-    if (formErrors[name as keyof RegisterUser]) {
+    if (formErrors[name as keyof RegisterErrors]) {
       setFormErrors((prev) => ({ ...prev, [name]: undefined }));
     }
   };
 
   // Validate form fields
-  const validate = (): Partial<RegisterUser> => {
-    const errors: Partial<RegisterUser> = {};
+  const validate = (): Partial<RegisterErrors> => {
+    const errors: Partial<RegisterErrors> = {};
 
     if (!formData.email.trim()) errors.email = "Email is required";
     else if (!/\S+@\S+\.\S+/.test(formData.email))
@@ -62,6 +64,14 @@ const RegisterPage = () => {
     if (!formData.password) errors.password = "Password is required";
     if (formData.password !== formData.confirmPassword)
       errors.confirmPassword = "Passwords do not match";
+    if (formData.role !== "admin" && !formData.market)
+      errors.market = "Market is required for this role";
+    if (formData.role !== "admin" && !formData.ntid.trim())
+      errors.ntid = "NTID is required for this role";
+    if (formData.role === "admin" && formData.ntid.trim())
+      errors.ntid = "NTID should be empty for admin role";
+    if (formData.role === "admin" && formData.market)
+      errors.market = "Market should be empty for admin role";
 
     return errors;
   };
@@ -81,8 +91,11 @@ const RegisterPage = () => {
 
     try {
       setSubmitting(true);
-      const res = await register(formData);
-      console.log(res, "ddddd");
+      const payload = {
+        ...formData,
+        market: formData.market ? Number(formData.market) : null, // convert to number
+      };
+      const res = await register(payload);
 
       if (res.status === 200) {
         setSuccessMessage("✅ User registered successfully!");
@@ -99,7 +112,7 @@ const RegisterPage = () => {
   };
 
   return (
-    <ProtectedRoute allowedRoles={['admin']}>
+    <ProtectedRoute allowedRoles={["admin"]}>
       <div className="container mt-4">
         <div className="row justify-content-center align-items-start g-4">
           {/* Form Card */}
@@ -146,26 +159,6 @@ const RegisterPage = () => {
                   )}
                 </div>
 
-                {/* NTID */}
-                <div className="mb-3">
-                  <label htmlFor="ntid" className="form-label">
-                    NTID <span className="text-danger">*</span>
-                  </label>
-                  <Inputbox
-                    type="text"
-                    text="Enter NTID"
-                    name="ntid"
-                    value={formData.ntid}
-                    onChange={handleChange}
-                    error={formErrors.ntid}
-                  />
-                  {formErrors.ntid && (
-                    <div className="text-danger mt-1 small">
-                      {formErrors.ntid}
-                    </div>
-                  )}
-                </div>
-
                 {/* Role */}
                 <div className="mb-3">
                   <label htmlFor="role" className="form-label">
@@ -193,6 +186,41 @@ const RegisterPage = () => {
                     </div>
                   )}
                 </div>
+                {formData.role !== "admin" && (
+                  <>
+                    <MarketDropdown
+                      value={formData.market}
+                      onChange={(value) =>
+                        setFormData((prev) => ({ ...prev, market: value }))
+                      }
+                    />
+
+                    {/* NTID */}
+                    <div className="mb-3">
+                      <label htmlFor="ntid" className="form-label">
+                        NTID <span className="text-danger">*</span>
+                      </label>
+                      <Inputbox
+                        type="text"
+                        text="Enter NTID"
+                        name="ntid"
+                        value={formData.ntid}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            ntid: e.target.value,
+                          }))
+                        }
+                        error={formErrors.ntid}
+                      />
+                      {formErrors.ntid && (
+                        <div className="text-danger mt-1 small">
+                          {formErrors.ntid}
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
 
                 {/* Password */}
                 <div className="mb-3">

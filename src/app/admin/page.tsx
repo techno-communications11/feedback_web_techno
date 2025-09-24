@@ -7,8 +7,10 @@ import { colors } from "./admin.constants";
 import { encodeId } from "@/lib/hashids";
 import ProtectedRoute from "@/context/ProtectedRoute";
 import { getyearsService } from "../services/getYearsService";
+import { useAuth } from "@/context/AuthContext";
 
 function Page() {
+  const { user } = useAuth();
   const router = useRouter();
   const [years, setYears] = React.useState<{ year: string }[]>([]);
   React.useEffect(() => {
@@ -21,16 +23,17 @@ function Page() {
     };
     yearList();
   }, []);
+  const baseRoute= user?.role === "market_manager" ? "market_manager" : "admin";
 
   // Handle click (optional: navigate or show modal)
   const handleYearClick = (year: string) => {
     if (!year) return;
     const encodedYear = encodeId(Number(year));
-    router.push(`/admin/monthly/${encodedYear}`);
+    router.push(`/${baseRoute}/monthly/${encodedYear}`);
   };
 
   return (
-    <ProtectedRoute allowedRoles={["admin"]}>
+    <ProtectedRoute allowedRoles={["admin","market_manager"]}>
       <div className="container py-5">
         {/* Header */}
         <div className="text-center mb-5">

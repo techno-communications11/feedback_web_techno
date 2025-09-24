@@ -24,14 +24,14 @@ export const loginUser = async (email: string, password: string) => {
 
     // Access token (short lived)
     const accessToken = jwt.sign(
-      { applicant_uuid: user.applicant_uuid, email: user.email, role: user.role },
+      { applicant_uuid: user.applicant_uuid, email: user.email, role: user.role, market_id: user.market_id },
       JWT_SECRET,
       { expiresIn: "15m" } // shorter life for security
     );
 
     // Refresh token (long lived, stored in cookie)
     const refreshToken = jwt.sign(
-      { applicant_uuid: user.applicant_uuid, email: user.email,role: user.role  },
+      { applicant_uuid: user.applicant_uuid, email: user.email,role: user.role, market_id: user.market_id },
       JWT_SECRET,
       { expiresIn: "7d" }
     );
@@ -53,7 +53,8 @@ export const loginUser = async (email: string, password: string) => {
         user: {
           applicant_uuid: user.applicant_uuid,
           email: user.email,
-          role: user.role
+          role: user.role,
+          market_id: user.market_id
         }
       }
     };
