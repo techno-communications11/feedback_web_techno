@@ -1,5 +1,4 @@
 export interface FormData {
-  applicant_uuid: string;
   first_name: string;
   last_name: string;
   NTID: string;

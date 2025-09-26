@@ -71,28 +71,28 @@ function Page() {
         // console.log("Server Response:", result.data);
         // Reset form on successful submission
         setFormData({
-                  first_name: "",
-                  last_name: "",
-                  NTID: "",
-                  market_id: "",
-                  market_manager_firstname: "",
-                  market_manager_lastname: "",
-                  HoursWorked: "",
-                  BoxesCompleted: "",
-                  AccessorySold: "",
-                  FeatureRevenue: "",
-                  CSAT: "",
-                  DayActivationRetention35: "",
-                  DayFeatureMRCRetention35: "",
-                  DayActivationRetention65: "",
-                  DayFeatureMRCRetention65: "",
-                  DayActivationRetention95: "",
-                  DayFeatureMRCRetention95: "",
-                  DayActivationRetention125: "",
-                  DayFeatureMRCRetention125: "",
-                  DayActivationRetention155: "",
-                  DayFeatureMRCRetention155: "",
-                });
+          first_name: "",
+          last_name: "",
+          NTID: "",
+          market_id: "",
+          market_manager_firstname: "",
+          market_manager_lastname: "",
+          HoursWorked: "",
+          BoxesCompleted: "",
+          AccessorySold: "",
+          FeatureRevenue: "",
+          CSAT: "",
+          DayActivationRetention35: "",
+          DayFeatureMRCRetention35: "",
+          DayActivationRetention65: "",
+          DayFeatureMRCRetention65: "",
+          DayActivationRetention95: "",
+          DayFeatureMRCRetention95: "",
+          DayActivationRetention125: "",
+          DayFeatureMRCRetention125: "",
+          DayActivationRetention155: "",
+          DayFeatureMRCRetention155: "",
+        });
       } else {
         alert(result.message || "Something went wrong");
         console.error(result.error);
@@ -213,9 +213,9 @@ function Page() {
                               value={formData.market_id.toString()}
                               onChange={(value) =>
                                 setFormData((prev) => ({
-                                                                  ...prev,
-                                                                  market_id: value,
-                                                                }))
+                                  ...prev,
+                                  market_id: value,
+                                }))
                               }
                             />
                           </div>

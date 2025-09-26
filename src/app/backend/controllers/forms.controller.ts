@@ -12,20 +12,36 @@ export async function POST(req: NextRequest) {
 
     if (!body.first_name) {
       return NextResponse.json(
-        { status: 400, message: "Invalid form data" },
-        { status: 400 }
+        { message: "Invalid form data" },
+        { status: 400 } // <-- HTTP status explicitly here
       );
     }
 
     const result = await createForm(body);
-    return NextResponse.json(result, { status: result.status });
+    console.log(result, "ress");
+
+    if (result.status && result.status >= 400) {
+      // explicitly send HTTP status from createForm
+      return NextResponse.json(
+        { message: result.message }, 
+        { status: result.status } // <-- ensures client sees 400
+      );
+    }
+
+    // Success
+    return NextResponse.json(
+      { message: result.message, data: result.data },
+      { status: 200 }
+    );
   } catch (error: any) {
     return NextResponse.json(
-      { status: 500, message: "Server error", error: error.message },
+      { message: "Server error", error: error.message },
       { status: 500 }
     );
   }
 }
+
+
 
 export async function GET(req: NextRequest) {
   try {

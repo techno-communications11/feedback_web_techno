@@ -1,17 +1,29 @@
-export const INSERT_COMMENT = `
+export const INSERT_COMMENT_EMPLOYEE = `
   INSERT INTO comments (
-    form_id,
-    applicant_uuid,
+    form_uuid,
     comment_text,
-    version
-  ) VALUES (?, ?, ?, ?)
+    ntid
+  ) VALUES (?, ?,?)
 `;
 
+export const INSERT_COMMENT_MANAGER = `
+  INSERT INTO comments (
+    form_uuid,
+    manager_comment,
+    ntid
+  ) VALUES (?, ?,?)
+`;
+export const UPDATE_MANAGER_COMMENT = `
+  UPDATE comments 
+  SET manager_comment = ?, 
+      manager_commented_at = CURRENT_TIMESTAMP 
+  WHERE form_uuid = ? AND comment_id = ?
+`;
 
-export const GET_COMMENTS_BY_FORM_ID=`
-SELECT * FROM comments WHERE form_id = ?`
-export const GET_COMMENTS_BY_APPLICANT_UUID=`
-SELECT * FROM comments WHERE applicant_uuid = ?`
+export const GET_COMMENTS_BY_FORM_ID = `
+SELECT * FROM comments WHERE form_id = ?`;
+export const GET_COMMENTS_BY_NTID = `
+SELECT * FROM comments WHERE NTID = ?`;
 
 export const GET_COMMENTS_BY_FORM = `
   SELECT * FROM comments WHERE form_id = ? ORDER BY version ASC
@@ -23,7 +35,7 @@ export const GET_LATEST_COMMENT = `
   ORDER BY version DESC LIMIT 1
 `;
 
- export const UPDATE_COMMENT_BY_MANAGER = `
+export const UPDATE_COMMENT_BY_MANAGER = `
  UPDATE comments
 SET manager_comment = ? ,manager_commented_at= CURRENT_TIMESTAMP
 WHERE form_id = ?;

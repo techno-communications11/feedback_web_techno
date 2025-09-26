@@ -1,22 +1,21 @@
 // src/services/comments.service.ts
 export interface Comment {
   comment_id: number;
-  form_id: number;
-  applicant_uuid: string;
+  form_uuid: number;
+  ntid: string;
   comment_text: string;
-  version: number;
+  manager_comment:string
   created_at: string;
+  manager_commented_at:string
 }
 
 // Fetch comments for a specific applicant
-export const fetchComments = async (applicant_uuid?: string): Promise<Comment[]> => {
-  if (!applicant_uuid) return [];
+export const fetchComments = async (ntid?: string): Promise<Comment[]> => {
+  if (!ntid) return [];
 
   try {
-    const res = await fetch(`/api/comments?applicant_uuid=${applicant_uuid}`);
+    const res = await fetch(`/api/comments?ntid=${ntid}`);
     const data = await res.json();
-
-     console.log(data, "comments data from fetchComments");
 
     if (Array.isArray(data.data)) {
       // Sort by created_at descending

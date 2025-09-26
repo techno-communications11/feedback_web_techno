@@ -54,3 +54,40 @@ export async function fetchFormComments({
 
   return response.json();
 }
+
+ // In fetchUserFeedback.ts
+// In fetchUserFeedback.ts
+export const submitComments = async ({
+  ntid,
+  form_uuid,
+  employeeComment,
+  managerComment,
+  type
+}: {
+  ntid:string,
+  form_uuid: string;
+  employeeComment?: string;
+  managerComment?: string;
+  type: 'employee' | 'manager';
+}) => {
+  const response = await fetch('/api/comments', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      ntid,
+      form_uuid,
+      comment_text: employeeComment,
+      manager_comment: managerComment,
+      type
+    }),
+  });
+  
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to submit comment');
+  }
+  
+  return response.json();
+};

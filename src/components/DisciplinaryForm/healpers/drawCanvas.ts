@@ -226,27 +226,27 @@ export const drawCanvas = async (
     ctx.fillText("DATE:", tableX + signatureColWidth / 10, contentY + 15);
     ctx.fillText("DATE:", tableX + signatureColWidth + signatureColWidth / 10, contentY + 15);
 
-    // --- Print Window ---
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) {
-      alert("Please allow pop-ups for printing.");
-      return;
-    }
+    // // --- Print Window ---
+    // const printWindow = window.open("", "_blank");
+    // if (!printWindow) {
+    //   alert("Please allow pop-ups for printing.");
+    //   return;
+    // }
 
-    const imgData = canvas.toDataURL("image/png");
-    printWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Print Document</title>
-          <style> body { margin: 0; } img { width: 210mm; height: 297mm; } </style>
-        </head>
-        <body>
-          <img src="${imgData}" onload="window.print(); window.close();" />
-        </body>
-      </html>
-    `);
-    printWindow.document.close();
+    // const imgData = canvas.toDataURL("image/png");
+    // printWindow.document.write(`
+    //   <!DOCTYPE html>
+    //   <html>
+    //     <head>
+    //       <title>Print Document</title>
+    //       <style> body { margin: 0; } img { width: 210mm; height: 297mm; } </style>
+    //     </head>
+    //     <body>
+    //       <img src="${imgData}" onload="window.print(); window.close();" />
+    //     </body>
+    //   </html>
+    // `);
+    // printWindow.document.close();
   } catch (err) {
     console.error("Error during print:", err);
     alert("An error occurred while preparing the document for printing.");

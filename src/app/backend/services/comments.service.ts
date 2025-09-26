@@ -1,60 +1,82 @@
-import { INSERT_COMMENT, GET_COMMENTS_BY_APPLICANT_UUID, GET_COMMENTS_BY_FORM_ID,UPDATE_COMMENT_TEXT_BY_MANAGER } from "../quaries/comments.queries";
+
+
+import { 
+  INSERT_COMMENT_EMPLOYEE,
+  INSERT_COMMENT_MANAGER,
+  UPDATE_MANAGER_COMMENT,
+  GET_COMMENTS_BY_NTID
+} from "../quaries/comments.queries";
 import { ApiResponse } from "../types/form.types";
-import { CommentData, updateCommentData } from "../types/comments.types"; 
+import { CommentData } from "../types/comments.types"; 
 import { pool } from "@/lib/db";
 
-export const addComment = async (comment: CommentData, version: number = 1): Promise<ApiResponse> => {
-  const connection = await pool.getConnection(); // get connection for transaction
-
+export const addComment = async (comment: CommentData, type: string): Promise<ApiResponse> => {
   try {
-    await connection.beginTransaction();
-
-    // Lock row for this form_id so no other transaction can insert simultaneously
-    const [rows]: any = await connection.execute(GET_COMMENTS_BY_FORM_ID + " FOR UPDATE", [comment.form_id]);
-
-    if (rows.length > 0) {
-      await connection.rollback();
+    console.log(comment,'cccccccc')
+    if (type === "employee") {
+      // Insert new employee comment
+      const [result] = await pool.execute(INSERT_COMMENT_EMPLOYEE, [
+        comment.form_uuid,
+        comment.comment_text,
+        comment.ntid
+      ]);
+      
       return {
-        status: 400,
-        message: "Comment already exists for this form",
+        status: 200,
+        message: "Employee comment added successfully",
+        data: result
       };
+    } else if (type === "manager") {
+      // Check if comment already exists for this form_uuid
+      const [existingComments]: any = await pool.execute(
+        'SELECT comment_id FROM comments WHERE form_uuid = ? ORDER BY created_at DESC LIMIT 1',
+        [comment.form_uuid]
+      );
+      
+      if (existingComments.length > 0) {
+        // Update existing comment with manager comment
+        const [result] = await pool.execute(UPDATE_MANAGER_COMMENT, [
+          comment.manager_comment,
+          comment.form_uuid,
+          existingComments[0].comment_id
+        ]);
+        
+        return {
+          status: 200,
+          message: "Manager comment updated successfully",
+          data: result
+        };
+      } else {
+        // Create new comment with manager comment
+        const [result] = await pool.execute(INSERT_COMMENT_MANAGER, [
+          comment.form_uuid,
+          comment.manager_comment,
+          comment.ntid
+        ]);
+        
+        return {
+          status: 200,
+          message: "Manager comment added successfully",
+          data: result
+        };
+      }
+    } else {
+      throw new Error("Invalid comment type");
     }
-
-    // Insert new comment
-    const values = [
-      comment.form_id,
-      comment.applicant_uuid,
-      comment.comment_text,
-      version,
-    ];
-
-    const [result] = await connection.execute(INSERT_COMMENT, values);
-    const saveddata = await getComment(comment.applicant_uuid);
-     console.log("SAVED DATA:", saveddata);
-
-    await connection.commit();
-
-    return {
-      status: 200,
-      message: "Comment added successfully",
-      data: saveddata.data ? saveddata.data[0] : null,
-    };
   } catch (error: any) {
-    await connection.rollback();
+    console.error("Error in addComment:", error);
     return {
       status: 500,
       message: "Failed to add comment",
       error: error.message || "Unknown error",
     };
-  } finally {
-    connection.release();
-  }
+  } 
 };
 
-export const getComment = async (applicant_uuid: string): Promise<ApiResponse> => {
+export const getComment = async (ntid: string): Promise<ApiResponse> => {
   const connection = await pool.getConnection();
   try {
-    const [rows]: any = await connection.execute(GET_COMMENTS_BY_APPLICANT_UUID, [applicant_uuid]);
+    const [rows]: any = await connection.execute(GET_COMMENTS_BY_NTID, [ntid]);
     return { status: 200, message: "Comments fetched successfully", data: rows };
   } catch (error: any) {
     console.error("GET COMMENTS ERROR:", error);
@@ -65,29 +87,3 @@ export const getComment = async (applicant_uuid: string): Promise<ApiResponse> =
   }
 };
 
-export const updateComment = async (comment: updateCommentData & { comment_id?: number }): Promise<ApiResponse> => {
-  try {
-    if (!comment.comment_id) {
-      return {
-        status: 400,
-        message: "comment_id is required for update",
-      };
-    }
-    const values = [
-      comment.comment_text,
-      comment.comment_id,
-    ];
-    const [result] = await pool.execute(UPDATE_COMMENT_TEXT_BY_MANAGER, values);
-    return {
-      status: 200,
-      message: "Comment updated successfully",
-      data: { ...comment },
-    };
-  } catch (error: any) {
-    return {
-      status: 500,
-      message: "Failed to update comment",
-      error: error.message || "Unknown error",
-    };
-  } 
-};

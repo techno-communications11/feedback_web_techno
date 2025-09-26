@@ -15,14 +15,25 @@ type AuthContextType = {
   loading: boolean;
   login: (token: string, user: User) => void;
   logout: () => void;
+  triggerDocsRefresh: () => void; // NEW
+  docsRefreshKey: number;
+  commentsRefreshKey: number; // new
+  triggerCommentsRefresh: () => void; // new
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const [token, setToken] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [docsRefreshKey, setDocsRefreshKey] = useState(0);
+  const triggerDocsRefresh = () => setDocsRefreshKey((prev) => prev + 1);
+  const [commentsRefreshKey, setCommentsRefreshKey] = useState(0);
+
+  const triggerCommentsRefresh = () => {
+    setCommentsRefreshKey((prev) => prev + 1);
+  };
 
   // 🔥 Try refresh on mount
   useEffect(() => {
@@ -64,7 +75,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ token, user, loading, login, logout }}>
+    <AuthContext.Provider
+      value={{
+        token,
+        user,
+        loading,
+        login,
+        logout,
+        triggerDocsRefresh,
+        docsRefreshKey,
+        commentsRefreshKey,
+        triggerCommentsRefresh,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

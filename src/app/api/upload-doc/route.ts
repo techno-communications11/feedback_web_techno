@@ -16,7 +16,6 @@ export async function POST(req: Request) {
     const formData = await req.formData();
     const file = formData.get("file") as File;
     const ntid = formData.get("ntid") as string;
-   
 
     if (!file || !ntid) {
       return new Response(JSON.stringify({ error: "File and NTID are required" }), { status: 400 });
@@ -25,10 +24,9 @@ export async function POST(req: Request) {
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
-    const writeup_uuid = crypto.randomUUID(); // unique ID for DB
+    const writeup_uuid = crypto.randomUUID();
     const key = `disciplinary-forms/${writeup_uuid}.png`;
 
-    // Upload to S3
     await s3.send(
       new PutObjectCommand({
         Bucket: process.env.AWS_BUCKET_NAME!,
@@ -41,13 +39,15 @@ export async function POST(req: Request) {
     const fileUrl = `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
 
     // Store in DB
-    const [rows] = await pool.execute(
+    const [result] = await pool.execute(
       `INSERT INTO employee_evaluation_writeups (writeup_uuid, ntid, document_url)
        VALUES (?, ?, ?)`,
       [writeup_uuid, ntid, fileUrl]
     );
 
-    return new Response(JSON.stringify(rows[0]), { status: 200 });
+    console.log(result); // { affectedRows: 1, insertId: 123, warningStatus: 0 }
+
+    return new Response(JSON.stringify({ url: fileUrl, writeup_uuid }), { status: 200 });
   } catch (err: any) {
     console.error(err);
     return new Response(JSON.stringify({ error: err.message }), { status: 500 });

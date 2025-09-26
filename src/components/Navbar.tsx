@@ -4,7 +4,6 @@ import React, { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-// import { IoNotificationsCircleOutline } from "react-icons/io5";
 import { FaUserCircle } from "react-icons/fa";
 import { LiaPowerOffSolid } from "react-icons/lia";
 import { TbLockPassword } from "react-icons/tb";
@@ -14,29 +13,15 @@ import { CiUser } from "react-icons/ci";
 import { useAuth } from "@/context/AuthContext";
 import ProtectedRoute from "../context/ProtectedRoute";
 import CustomAlert from "./CustomAlert";
-// import { fetchEmployeeNotification } from "@/app/services/notificationService";
-// import NotificationList from "./NotificationList";
+import { IoMdDownload } from "react-icons/io";
+
 import Spinners from "./Spinners";
-
-// Define interfaces for type safety
-// interface Notification {
-//   id: string;
-//   message: string;
-//   createdAt: string;
-// }
-
-// interface User {
-//   applicant_uuid: string;
-//   role: "admin" | "user";
-// }
 
 const Navbar: React.FC = () => {
   const router = useRouter();
   const { user, loading, logout, token } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  // const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  // const [notificationCount, setNotificationCount] = useState(0);
-  // const [notifications, setNotifications] = useState<Notification[]>([]);
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLLIElement>(null);
@@ -46,54 +31,35 @@ const Navbar: React.FC = () => {
       <CustomAlert message="error logout" onClose={() => {}} type="error" />
     );
   }
-  // const notificationRef = useRef<HTMLDivElement>(null);
 
-  // // Handle clicks outside to close dropdowns
-  // useEffect(() => {
-  //   const handleClickOutside = (event: MouseEvent) => {
-  //     if (
-  //       dropdownRef.current &&
-  //       !dropdownRef.current.contains(event.target as Node)
-  //     ) {
-  //       setIsDropdownOpen(false);
-  //     }
-  //     if (
-  //       notificationRef.current &&
-  //       !notificationRef.current.contains(event.target as Node)
-  //     ) {
-  //       setIsNotificationOpen(false);
-  //     }
-  //   };
+  const handleDownload = async (endpoint: string, filename: string) => {
+    try {
+      setIsLoading(true);
+      const res = await fetch(endpoint, { method: "GET" });
 
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => document.removeEventListener("mousedown", handleClickOutside);
-  // }, []);
+      if (!res.ok) {
+        throw new Error("Failed to download");
+      }
 
-  // Fetch notifications with error handling and debouncing
-  // const fetchNotifications = useCallback(async () => {
-  //   if (!user?.applicant_uuid) return;
-  //   setIsLoading(true);
-  //   try {
-  //     const data = await fetchEmployeeNotification(user.applicant_uuid);
-  //     setNotifications(data || []);
-  //     setNotificationCount(data?.length || 0);
-  //     setError(null);
-  //   } catch (err) {
-  //     console.error("Error fetching notifications:", err);
-  //     setError("Failed to load notifications");
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // }, [user?.applicant_uuid]);
-
-  // useEffect(() => {
-  //   fetchNotifications();
-  //   const interval = setInterval(fetchNotifications, 30000);
-  //   return () => clearInterval(interval);
-  // }, [fetchNotifications]);
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Download error:", err);
+      setError("Failed to download file");
+    } finally {
+      setIsLoading(false);
+      setIsDropdownOpen(false);
+    }
+  };
 
   const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
-  // const toggleNotification = () => setIsNotificationOpen((prev) => !prev);
 
   const handleLogout = async () => {
     setIsLoading(true);
@@ -268,6 +234,42 @@ const Navbar: React.FC = () => {
                           Fill Form
                         </Link>
                       </li>
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          onClick={() =>
+                            handleDownload(
+                              "/api/download-evaluations",
+                              "evaluation-data.xlsx"
+                            )
+                          }
+                        >
+                          <IoMdDownload
+                            className="text-success me-2"
+                            aria-hidden="true"
+                          />
+                          Evaluation Data
+                        </button>
+                      </li>
+
+                      <li>
+                        <button
+                          className="dropdown-item"
+                          onClick={() =>
+                            handleDownload(
+                              "/api/download-writeups",
+                              "writeups-data.xlsx"
+                            )
+                          }
+                        >
+                          <IoMdDownload
+                            className="text-danger me-2"
+                            aria-hidden="true"
+                          />
+                          Writeups Data
+                        </button>
+                      </li>
+
                       <li>
                         <Link
                           className="dropdown-item"

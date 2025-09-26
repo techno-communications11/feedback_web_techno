@@ -7,10 +7,7 @@ interface SpinnersProps {
 
 function Spinners({ text }: SpinnersProps) {
   return (
-    <div
-      className="d-flex justify-content-center align-items-center"
-      style={{ height: "300px" }}
-    >
+    <div className="d-flex justify-content-center align-items-center">
       <Spinner animation="border" variant="primary" />
       <span className="ms-2">{text}</span>
     </div>

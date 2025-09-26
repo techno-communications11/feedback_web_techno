@@ -91,7 +91,7 @@ function Evaluation({ selectedUser }: EvaluationProps) {
             <div className="list-group list-group-flush">
               <div className="list-group-item border-0 ps-0">
                 <Commentsdata
-                  applicant_uuid={selectedUser.applicant_uuid}
+                  ntid={selectedUser.ntid}
                   first_name={selectedUser.first_name}
                   last_name={selectedUser.last_name}
                 />

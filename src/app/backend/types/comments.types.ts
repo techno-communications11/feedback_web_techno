@@ -1,14 +1,7 @@
 export interface CommentData {
-  form_id: number;
-  applicant_uuid: string;
+  ntid:string,
+  form_uuid: number;
   comment_text: string;
-  manager_comment:string;
-  field_name?: string;
-}
-
-export interface updateCommentData {
-  comment_id: number;
-  applicant_uuid: string;
-  comment_text: string;
-  manager_comment:string;
+  manager_comment: string;
+  text?: "employee" | "market_manager"; // union type
 }

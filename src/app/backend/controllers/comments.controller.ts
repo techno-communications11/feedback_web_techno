@@ -1,24 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
-import { addComment, getComment,updateComment } from "../services/comments.service";
-import { CommentData,updateCommentData } from "../types/comments.types";
+import { addComment, getComment } from "../services/comments.service";
+import { CommentData } from "../types/comments.types";
 
 export async function POST(req: NextRequest) {
   try {
-    const body: CommentData & { version?: number } = await req.json();
+    const body = await req.json();
+    const { comment_text, manager_comment, form_uuid, type, ntid } = body;
 
-    if (!body.comment_text || !body.form_id || !body.applicant_uuid) {
+    // Validate required fields based on type
+    if (type === "employee" && (!comment_text || !form_uuid || !ntid)) {
       return NextResponse.json(
-        { status: 400, message: "Invalid comment data" },
+        { status: 400, message: "Employee comment and form_uuid are required" },
         { status: 400 }
       );
     }
 
-    const version = body.version || 1;
+    if (type === "manager" && (!manager_comment || !form_uuid || !ntid)) {
+      return NextResponse.json(
+        { status: 400, message: "Manager comment and form_uuid are required" },
+        { status: 400 }
+      );
+    }
+
+    if (!type || (type !== "employee" && type !== "manager")) {
+      return NextResponse.json(
+        {
+          status: 400,
+          message: "Invalid comment type. Must be 'employee' or 'manager'",
+        },
+        { status: 400 }
+      );
+    }
 
     // Insert comment
-    const savedComment = await addComment(body, version);
+    const savedComment = await addComment(
+      { comment_text, manager_comment, form_uuid,ntid } as CommentData,
+      type
+    );
 
-    console.log("Saved Comment:", savedComment);
+    if (savedComment.status !== 200) {
+      return NextResponse.json(
+        {
+          status: savedComment.status,
+          message: savedComment.message,
+          error: savedComment.error,
+        },
+        { status: savedComment.status }
+      );
+    }
 
     return NextResponse.json(
       {
@@ -29,7 +58,7 @@ export async function POST(req: NextRequest) {
       { status: 200 }
     );
   } catch (error: any) {
-    console.error(error);
+    console.error("API Route Error:", error);
     return NextResponse.json(
       { status: 500, message: "Server error", error: error.message },
       { status: 500 }
@@ -41,15 +70,15 @@ export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
     const searchParams = url.searchParams;
-    const applicant_uuid = searchParams.get("applicant_uuid");
+    const ntid = searchParams.get("ntid");
 
-    if (!applicant_uuid) {
+    if (!ntid) {
       return NextResponse.json(
-        { status: 400, message: "applicant_uuid is required" },
+        { status: 400, message: "ntid is required" },
         { status: 400 }
       );
     }
-    const result = await getComment(applicant_uuid);
+    const result = await getComment(ntid);
     return NextResponse.json(result, { status: result.status });
   } catch (error: any) {
     return NextResponse.json(
@@ -58,37 +87,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
-export async function PUT(req: NextRequest) {
-  try {
-    const body: updateCommentData & { comment_id?: number } = await req.json();
-    console.log("Received Update Comment Data:", body);
-    if (
-      !body.comment_text ||
-      !body.comment_id
-    ) {
-      return NextResponse.json(
-        { status: 400, message: "Invalid comment data" },
-        { status: 400 }
-      );
-    }
-    // Update comment
-    const updatedComment = await updateComment(body);
-
-    return NextResponse.json(
-      {
-        status: 200,
-        message: "Comment updated successfully",
-        data: updatedComment.data,
-      },
-      { status: 200 }
-    );
-  } catch (error: any) {
-    console.error(error);
-    return NextResponse.json(
-      { status: 500, message: "Server error", error: error.message },
-      { status: 500 }
-    );
-  }
-}
-

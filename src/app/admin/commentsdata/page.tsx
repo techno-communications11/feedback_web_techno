@@ -5,27 +5,29 @@ import { FaUser } from "react-icons/fa";
 import { fetchComments, Comment } from "../../services/readCommenstService";
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
 import "../../styles/commentdata.css";
+import { useAuth } from "@/context/AuthContext";
 
 interface CommentsDataProps {
-  applicant_uuid?: string;
+  ntid?: string;
   first_name?: string;
   last_name?: string;
 }
 
 export default function CommentsData({
-  applicant_uuid,
+  ntid,
   first_name,
   last_name,
 }: CommentsDataProps) {
+  const { commentsRefreshKey } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const getComments = async () => {
-      if (!applicant_uuid) return;
+      if (!ntid) return;
       setLoading(true);
       try {
-        const data = await fetchComments(applicant_uuid);
+        const data = await fetchComments(ntid);
         setComments(data || []);
       } catch (err) {
         console.error("Error fetching comments:", err);
@@ -35,9 +37,9 @@ export default function CommentsData({
     };
 
     getComments();
-  }, [applicant_uuid]);
+  }, [ntid, commentsRefreshKey]);
 
-  if (!applicant_uuid) {
+  if (!ntid) {
     return (
       <p className="text-muted text-center py-3" role="alert">
         No user selected.

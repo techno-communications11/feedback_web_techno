@@ -7,7 +7,7 @@ const getyearsService = async (): Promise<number[]> => {
       },
     });
     const data = await responser.json();
-    console.log(data, "ffff");
+    // console.log(data, "ffff");
     return data;
   } catch (error) {
     console.error("Error fetching years:", error);

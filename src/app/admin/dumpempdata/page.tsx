@@ -55,7 +55,7 @@ function Page() {
     <div
       className="d-flex flex-column"
       style={{
-        height: "85vh",
+        minHeight: "100vh",
         width: "100vw",
         overflow: "hidden",
         backgroundColor: "#f8f9fa",
