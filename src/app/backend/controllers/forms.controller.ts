@@ -3,7 +3,8 @@ import {
   createForm,
   getFormCommentsByUserMonthYear,
 } from "../services/forms.service";
-import { FormData, MonthData } from "../types/form.types";
+import { FormData,  } from "../types/form.types";
+
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,12 +32,12 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const searchParams = url.searchParams;
 
-    const applicant_uuid = searchParams.get("applicant_uuid");
+    const ntid = searchParams.get("ntid");
     const month = searchParams.get("month");
     const year = searchParams.get("year");
-    console.log(applicant_uuid, month, year);
+    console.log(ntid, month, year);
 
-    if (!applicant_uuid || !month || !year) {
+    if (!ntid || !month || !year) {
       return NextResponse.json(
         {
           status: 400,
@@ -46,14 +47,12 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Build a proper MonthData object
-    const monthData: MonthData = {
-      applicant_uuid: applicant_uuid,
+    
+    const result = await getFormCommentsByUserMonthYear({
+      ntid,
       month: Number(month),
       year: Number(year),
-    };
-
-    const result = await getFormCommentsByUserMonthYear(monthData);
+    });
 
     return NextResponse.json(result, { status: 200 });
   } catch (error: any) {

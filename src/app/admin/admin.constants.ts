@@ -20,9 +20,9 @@ export const colors = [
     { id: 7, Month: "JULY" },
     { id: 8, Month: "AUGUST" },
     { id: 9, Month: "SEPTEMBER" },
-    { id: 9, Month: "OCTOBER" },
-    { id: 9, Month: "NOVEMBER" },
-    { id: 9, Month: "DECEMBER" },
+    { id: 10, Month: "OCTOBER" },
+    { id: 11, Month: "NOVEMBER" },
+    { id: 12, Month: "DECEMBER" },
   ];
 
   export const categories = [

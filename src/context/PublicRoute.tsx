@@ -2,6 +2,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import Spinners from "@/components/Spinners";
 
 const roleRoutes: Record<string, string> = {
   employee: "/employee",
@@ -16,7 +17,6 @@ export default function PublicRoute({
 }) {
   const { token, user, loading } = useAuth();
   const router = useRouter();
-  console.log(user, "rrr");
 
   useEffect(() => {
     if (!loading && token && user?.role) {
@@ -24,15 +24,7 @@ export default function PublicRoute({
     }
   }, [token, user, loading, router]);
 
-  if (loading)
-    return (
-      <div
-        className="d-flex justify-content-center align-items-center"
-        style={{ height: "100px" }}
-      >
-        <div className="spinner-border"></div>
-      </div>
-    );
+  if (loading) return <Spinners text="loading..." />;
 
   return <>{!token && children}</>;
 }

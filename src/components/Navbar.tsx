@@ -1,139 +1,320 @@
 "use client";
-import React, { useEffect, useState } from "react";
+
+import React, { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { IoNotificationsCircleOutline } from "react-icons/io5";
+import { useRouter } from "next/navigation";
+// import { IoNotificationsCircleOutline } from "react-icons/io5";
 import { FaUserCircle } from "react-icons/fa";
 import { LiaPowerOffSolid } from "react-icons/lia";
 import { TbLockPassword } from "react-icons/tb";
 import { SiGoogleforms } from "react-icons/si";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { CiUser } from "react-icons/ci";
-import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import ProtectedRoute from "../context/ProtectedRoute";
-import { fetchEmployeeNotification } from "@/app/services/notificationService";
-import NotificationList from "./NotificationList";
+import CustomAlert from "./CustomAlert";
+// import { fetchEmployeeNotification } from "@/app/services/notificationService";
+// import NotificationList from "./NotificationList";
+import Spinners from "./Spinners";
+
+// Define interfaces for type safety
+// interface Notification {
+//   id: string;
+//   message: string;
+//   createdAt: string;
+// }
+
+// interface User {
+//   applicant_uuid: string;
+//   role: "admin" | "user";
+// }
 
 const Navbar: React.FC = () => {
   const router = useRouter();
   const { user, loading, logout, token } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [notificationCount, setNotificationCount] = useState(0);
-  const [notifications, setNotifications] = useState<any[]>([]); // full notifications
+  // const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+  // const [notificationCount, setNotificationCount] = useState(0);
+  // const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const dropdownRef = useRef<HTMLLIElement>(null);
 
-  if (loading || !token) return null;
+  if (error) {
+    return (
+      <CustomAlert message="error logout" onClose={() => {}} type="error" />
+    );
+  }
+  // const notificationRef = useRef<HTMLDivElement>(null);
 
-  const role = user?.role;
+  // // Handle clicks outside to close dropdowns
+  // useEffect(() => {
+  //   const handleClickOutside = (event: MouseEvent) => {
+  //     if (
+  //       dropdownRef.current &&
+  //       !dropdownRef.current.contains(event.target as Node)
+  //     ) {
+  //       setIsDropdownOpen(false);
+  //     }
+  //     if (
+  //       notificationRef.current &&
+  //       !notificationRef.current.contains(event.target as Node)
+  //     ) {
+  //       setIsNotificationOpen(false);
+  //     }
+  //   };
 
-  // ✅ Fetch notifications immediately on load
-  useEffect(() => {
-    const getNotifications = async () => {
-      if (!user?.applicant_uuid) return;
-      try {
-        const data = await fetchEmployeeNotification(user.applicant_uuid);
-        setNotifications(data || []);
-        setNotificationCount(data?.length || 0);
-      } catch (err) {
-        console.error("Error fetching notifications:", err);
-      }
-    };
-    getNotifications();
-  }, [user?.applicant_uuid]);
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => document.removeEventListener("mousedown", handleClickOutside);
+  // }, []);
 
-  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
-  const toggleNotification = () => setIsNotificationOpen(!isNotificationOpen);
+  // Fetch notifications with error handling and debouncing
+  // const fetchNotifications = useCallback(async () => {
+  //   if (!user?.applicant_uuid) return;
+  //   setIsLoading(true);
+  //   try {
+  //     const data = await fetchEmployeeNotification(user.applicant_uuid);
+  //     setNotifications(data || []);
+  //     setNotificationCount(data?.length || 0);
+  //     setError(null);
+  //   } catch (err) {
+  //     console.error("Error fetching notifications:", err);
+  //     setError("Failed to load notifications");
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }, [user?.applicant_uuid]);
+
+  // useEffect(() => {
+  //   fetchNotifications();
+  //   const interval = setInterval(fetchNotifications, 30000);
+  //   return () => clearInterval(interval);
+  // }, [fetchNotifications]);
+
+  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
+  // const toggleNotification = () => setIsNotificationOpen((prev) => !prev);
 
   const handleLogout = async () => {
+    setIsLoading(true);
     try {
-      await fetch("/api/logout", { method: "POST" });
-      logout();
-      router.push("/login");
+      const res = await fetch("/api/logout", { method: "POST" });
+      if (res.ok) {
+        logout();
+        router.push("/login");
+      } else {
+        setError("Logout failed");
+      }
     } catch (err) {
-      console.error("Logout failed:", err);
+      console.error("Logout error:", err);
+      setError("An error occurred during logout");
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  if (loading || !token) {
+    return <Spinners text="loading..." />;
+  }
+
   return (
     <ProtectedRoute>
-      <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm border-bottom fixed-top px-5 py-3">
+      <nav
+        className="navbar navbar-expand-lg navbar-light bg-light shadow-sm border-bottom fixed-top px-3 px-md-5 py-3"
+        role="navigation"
+        aria-label="Main navigation"
+      >
         {/* Logo */}
-        <Link className="navbar-brand d-flex align-items-center" href="/">
-          <Image src="/logo.webp" width={30} height={30} alt="Logo" className="me-2" />
-          <span className="fw-bold">Techno Communications LLC</span>
+        <Link
+          className="navbar-brand d-flex align-items-center"
+          href="/"
+          aria-label="Techno Communications LLC Home"
+        >
+          <Image
+            src="/logo.webp"
+            width={30}
+            height={30}
+            alt="Techno Communications LLC Logo"
+            className="me-2"
+            priority
+          />
+          <span className="fw-bold d-none d-sm-inline">
+            Techno Communications LLC
+          </span>
         </Link>
+
+        {/* Navbar Toggle for Mobile */}
+        <button
+          className="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
 
         {/* Navbar links */}
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav ms-auto align-items-lg-center">
-
             {/* Notification Bell */}
-            <li className="nav-item dropdown me-4 position-relative">
+            {/* <li
+              className="nav-item dropdown me-3 me-lg-4 position-relative"
+              ref={notificationRef}
+            >
               <button
-                className="nav-link bg-transparent border-0 p-0"
+                className="nav-link bg-transparent border-0 p-0 position-relative"
                 onClick={toggleNotification}
+                aria-label={`Notifications (${notificationCount} new)`}
+                disabled={isLoading}
               >
-                <IoNotificationsCircleOutline size={28} className="text-success" />
+                <IoNotificationsCircleOutline
+                  size={28}
+                  className="text-success"
+                  aria-hidden="true"
+                />
                 {notificationCount > 0 && (
-                  <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style={{ fontSize: "0.75rem" }}>
+                  <span
+                    className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                    style={{ fontSize: "0.75rem" }}
+                  >
                     {notificationCount}
+                    <span className="visually-hidden">new notifications</span>
                   </span>
                 )}
               </button>
 
               {isNotificationOpen && (
-                <ul className="dropdown-menu dropdown-menu-end show" style={{ transform: "translate(-130px, 40px)" }}>
-                  <NotificationList
-                    notifications={notifications} // pass the fetched data
-                    setNotificationLength={setNotificationCount}
-                    showFullList={true}
-                  />
-                </ul>
+                <div
+                  className="dropdown-menu dropdown-menu-end show p-3"
+                  style={{
+                    minWidth: "280px",
+                    maxWidth: "90vw",
+                    right: "0",
+                    left: "auto",
+                    top: "100%",
+                    marginTop: "10px",
+                  }}
+                >
+                  {error && (
+                    <div className="alert alert-danger" role="alert">
+                      {error}
+                    </div>
+                  )}
+                  {isLoading ? (
+                    <Spinners text="loading..."/>
+                  ) : (
+                    <NotificationList
+                      notifications={notifications}
+                      setNotificationLength={setNotificationCount}
+                      showFullList={true}
+                    />
+                  )}
+                </div>
               )}
-            </li>
+            </li> */}
 
             {/* User Dropdown */}
-            <li className="nav-item dropdown me-2">
-              <button className="nav-link dropdown-toggle bg-transparent border-0 p-0" onClick={toggleDropdown}>
-                <FaUserCircle size={30} />
+            <li className="nav-item dropdown me-2" ref={dropdownRef}>
+              <button
+                className="nav-link dropdown-toggle bg-transparent border-0 p-0"
+                onClick={toggleDropdown}
+                aria-label="User menu"
+                aria-expanded={isDropdownOpen}
+              >
+                <FaUserCircle size={30} aria-hidden="true" />
               </button>
               {isDropdownOpen && (
-                <ul className="dropdown-menu dropdown-menu-end show" style={{ transform: "translate(-85px, 40px)" }}>
-                  {role === "admin" && (
+                <ul
+                  className="dropdown-menu dropdown-menu-end show"
+                  style={{
+                    minWidth: "200px",
+                    maxWidth: "90vw",
+                    right: "0",
+                    left: "auto",
+                    top: "100%",
+                    marginTop: "10px",
+                  }}
+                >
+                  {user?.role === "admin" && (
                     <>
                       <li>
-                        <Link className="dropdown-item" href="/admin/dumpempdata">
-                          <FaCloudUploadAlt className="text-primary me-2" /> Dump data
+                        <Link
+                          className="dropdown-item"
+                          href="/admin/dumpempdata"
+                          aria-label="Dump employee data"
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          <FaCloudUploadAlt
+                            className="text-primary me-2"
+                            aria-hidden="true"
+                          />{" "}
+                          Dump data
                         </Link>
                       </li>
                       <li>
-                        <Link className="dropdown-item" href="/admin/create-form">
-                          <SiGoogleforms className="text-success me-2" /> Fill Form
+                        <Link
+                          className="dropdown-item"
+                          href="/admin/create-form"
+                          aria-label="Create form"
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          <SiGoogleforms
+                            className="text-success me-2"
+                            aria-hidden="true"
+                          />{" "}
+                          Fill Form
                         </Link>
                       </li>
                       <li>
-                        <Link className="dropdown-item" href="/admin/register">
-                          <CiUser className="text-warning me-2" /> Register
+                        <Link
+                          className="dropdown-item"
+                          href="/admin/register"
+                          aria-label="Register new user"
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          <CiUser
+                            className="text-warning me-2"
+                            aria-hidden="true"
+                          />{" "}
+                          Register
                         </Link>
                       </li>
                       <li>
-                        <Link className="dropdown-item" href="/admin/reset-password">
-                          <TbLockPassword className="text-primary me-2" /> Reset password
+                        <Link
+                          className="dropdown-item"
+                          href="/admin/reset-password"
+                          aria-label="Reset password"
+                          onClick={() => setIsDropdownOpen(false)}
+                        >
+                          <TbLockPassword
+                            className="text-primary me-2"
+                            aria-hidden="true"
+                          />{" "}
+                          Reset password
                         </Link>
                       </li>
-                      <li><hr className="dropdown-divider" /></li>
+                      <li>
+                        <hr className="dropdown-divider" />
+                      </li>
                     </>
                   )}
                   <li>
-                    <button className="dropdown-item text-danger" onClick={handleLogout}>
-                      <LiaPowerOffSolid className="me-2" /> Logout
+                    <button
+                      className="dropdown-item text-danger"
+                      onClick={handleLogout}
+                      disabled={isLoading}
+                      aria-label="Logout"
+                    >
+                      <LiaPowerOffSolid className="me-2" aria-hidden="true" />{" "}
+                      {isLoading ? "Logging out..." : "Logout"}
                     </button>
                   </li>
                 </ul>
               )}
             </li>
-
           </ul>
         </div>
       </nav>

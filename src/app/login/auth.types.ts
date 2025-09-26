@@ -13,7 +13,6 @@ export interface RegisterUser {
   email: string;
   password: string;
   confirmPassword: string;
-  ntid: string;
   market: number | null;
   role: string;
 }
@@ -22,7 +21,6 @@ export interface RegisterErrors {
   email: string;
   password: string;
   confirmPassword: string;
-  ntid: string;
   market: string;
   role: string;
 }

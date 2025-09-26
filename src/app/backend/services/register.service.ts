@@ -2,7 +2,11 @@ import { pool } from "@/lib/db";
 import { UserData } from "../types/register.types";
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcryptjs";
-import { INSERT_USER,SELECT_USER_BY_EMAIL, UPDATE_PASSWORD_BY_EMAIL } from "../quaries/auth.queries";
+import {
+  INSERT_USER,
+  SELECT_USER_BY_EMAIL,
+  UPDATE_PASSWORD_BY_EMAIL,
+} from "../quaries/auth.queries";
 
 export const createUser = async (user: UserData) => {
   try {
@@ -13,8 +17,7 @@ export const createUser = async (user: UserData) => {
       applicant_uuid,
       user.email,
       hashedPassword,
-      user.role || "employee", // default role
-      user.ntid || "",
+      user.role, // default role
       user.market || null,
     ];
     console.log(values);
@@ -27,8 +30,7 @@ export const createUser = async (user: UserData) => {
       data: {
         applicant_uuid,
         email: user.email,
-        role: user.role || "employee",
-        ntid: user.ntid || "",
+        role: user.role,
         market: user.market || null,
       },
     };
@@ -38,7 +40,7 @@ export const createUser = async (user: UserData) => {
     if (error.code === "ER_DUP_ENTRY") {
       return {
         status: 400,
-        message: "Email or ntid already exists",
+        message: "Email already exists",
         error: error.message,
       };
     }
@@ -51,13 +53,15 @@ export const createUser = async (user: UserData) => {
   }
 };
 
-export const updatePassword = async (email:string,password:string) => {
+export const updatePassword = async (email: string, password: string) => {
   let connection;
   try {
     connection = await pool.getConnection();
 
     // Check if user exists
-    const [userRows]: any = await connection.execute(SELECT_USER_BY_EMAIL, [email]);
+    const [userRows]: any = await connection.execute(SELECT_USER_BY_EMAIL, [
+      email,
+    ]);
     if (userRows.length === 0) {
       return { status: 404, message: "User not found" };
     }
@@ -66,10 +70,10 @@ export const updatePassword = async (email:string,password:string) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Update password
-    const [result]: any = await connection.execute(
-      UPDATE_PASSWORD_BY_EMAIL,
-      [hashedPassword, email]
-    );
+    const [result]: any = await connection.execute(UPDATE_PASSWORD_BY_EMAIL, [
+      hashedPassword,
+      email,
+    ]);
 
     if (result.affectedRows === 0) {
       return { status: 404, message: "User not found" };
@@ -87,5 +91,3 @@ export const updatePassword = async (email:string,password:string) => {
     if (connection) connection.release(); // ✅ always release
   }
 };
-
-

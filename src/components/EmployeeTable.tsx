@@ -15,9 +15,12 @@ const EmployeeTable: React.FC<Props> = ({ data, isLoading = false }) => {
           <thead>
             <tr>
               <th colSpan={15} className="text-center py-4">
-                <div className="d-flex justify-content-center align-items-center" style={{ height: '100px' }}>
-        <div className="spinner-border"></div>
-      </div>
+                <div
+                  className="d-flex justify-content-center align-items-center"
+                  style={{ height: "100px" }}
+                >
+                  <div className="spinner-border"></div>
+                </div>
               </th>
             </tr>
           </thead>
@@ -26,7 +29,7 @@ const EmployeeTable: React.FC<Props> = ({ data, isLoading = false }) => {
     );
   }
 
-  console.log(data, "data in table component"); 
+  console.log(data, "data in table component");
 
   if (data.length === 0) {
     return (

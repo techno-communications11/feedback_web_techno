@@ -77,7 +77,7 @@ const ResetPasswordPage = () => {
     }
 
     // Simulate API call
-    setSuccess("✅ Password reset to your email!");
+    setSuccess("✅ Password reset Successful");
     // In real app: call API like resetPassword(formData)
     setFormData({ email: "", password: "", confirmPassword: "" });
 

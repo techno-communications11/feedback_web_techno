@@ -11,12 +11,14 @@ import {
 } from "./form.types";
 import { submitEmployeeForm } from "@/app/services/formSubmitService";
 import ProtectedRoute from "@/context/ProtectedRoute";
+import MarketDropdown from "@/components/MarketDropdown";
 
 function Page() {
   const [formData, setFormData] = useState<FormData>({
     first_name: "",
     last_name: "",
     NTID: "",
+    market_id: "",
     market_manager_firstname: "",
     market_manager_lastname: "",
     HoursWorked: "",
@@ -24,6 +26,14 @@ function Page() {
     AccessorySold: "",
     FeatureRevenue: "",
     CSAT: "",
+    DayActivationRetention35: "",
+    DayFeatureMRCRetention35: "",
+    DayActivationRetention65: "",
+    DayFeatureMRCRetention65: "",
+    DayActivationRetention95: "",
+    DayFeatureMRCRetention95: "",
+    DayActivationRetention125: "",
+    DayFeatureMRCRetention125: "",
     DayActivationRetention155: "",
     DayFeatureMRCRetention155: "",
   });
@@ -61,19 +71,28 @@ function Page() {
         // console.log("Server Response:", result.data);
         // Reset form on successful submission
         setFormData({
-          first_name: "",
-          last_name: "",
-          NTID: "",
-          market_manager_firstname: "",
-          market_manager_lastname: "",
-          HoursWorked: "",
-          BoxesCompleted: "",
-          AccessorySold: "",
-          FeatureRevenue: "",
-          CSAT: "",
-          DayActivationRetention155: "",
-          DayFeatureMRCRetention155: "",
-        });
+                  first_name: "",
+                  last_name: "",
+                  NTID: "",
+                  market_id: "",
+                  market_manager_firstname: "",
+                  market_manager_lastname: "",
+                  HoursWorked: "",
+                  BoxesCompleted: "",
+                  AccessorySold: "",
+                  FeatureRevenue: "",
+                  CSAT: "",
+                  DayActivationRetention35: "",
+                  DayFeatureMRCRetention35: "",
+                  DayActivationRetention65: "",
+                  DayFeatureMRCRetention65: "",
+                  DayActivationRetention95: "",
+                  DayFeatureMRCRetention95: "",
+                  DayActivationRetention125: "",
+                  DayFeatureMRCRetention125: "",
+                  DayActivationRetention155: "",
+                  DayFeatureMRCRetention155: "",
+                });
       } else {
         alert(result.message || "Something went wrong");
         console.error(result.error);
@@ -114,134 +133,149 @@ function Page() {
     ));
 
   return (
-    <ProtectedRoute allowedRoles={['admin']}>
-    <div className="min-vh-100  d-flex align-items-center">
-      <div className="container ">
-        <div className="row justify-content-center">
-          <div className="col-lg-10 col-xl-9 ">
-            {/* Main Form Card */}
-            <div className="card border-1">
-              {/* Header */}
-              <div className="card-header  text-dark py-3">
-                <h3 className="card-title mb-0 text-center fw-bold">
-                  <i className="bi bi-clipboard-check me-2"></i>
-                  Employee Evaluation Form
-                </h3>
-              </div>
+    <ProtectedRoute allowedRoles={["admin"]}>
+      <div className="min-vh-100  d-flex align-items-center">
+        <div className="container ">
+          <div className="row justify-content-center">
+            <div className="col-lg-10 col-xl-9 ">
+              {/* Main Form Card */}
+              <div className="card border-1">
+                {/* Header */}
+                <div className="card-header  text-dark py-3">
+                  <h3 className="card-title mb-0 text-center fw-bold">
+                    <i className="bi bi-clipboard-check me-2"></i>
+                    Employee Evaluation Form
+                  </h3>
+                </div>
 
-              <div className="card-body p-4">
-                {/* Success Message */}
-                {successMessage && (
-                  <div
-                    className="alert alert-success alert-dismissible fade show mb-4"
-                    role="alert"
-                  >
-                    <i className="bi bi-check-circle-fill me-2"></i>
-                    {successMessage}
-                    <button
-                      type="button"
-                      className="btn-close"
-                      onClick={() => setSuccessMessage(null)}
-                    ></button>
-                  </div>
-                )}
+                <div className="card-body p-4">
+                  {/* Success Message */}
+                  {successMessage && (
+                    <div
+                      className="alert alert-success alert-dismissible fade show mb-4"
+                      role="alert"
+                    >
+                      <i className="bi bi-check-circle-fill me-2"></i>
+                      {successMessage}
+                      <button
+                        type="button"
+                        className="btn-close"
+                        onClick={() => setSuccessMessage(null)}
+                      ></button>
+                    </div>
+                  )}
 
-                <form onSubmit={handleSubmit}>
-                  {/* Employee Info Section */}
-                  <div className="mb-4">
-                    <h5 className="text-primary mb-3 border-bottom pb-2">
-                      <i className="bi bi-person-badge me-2"></i>
-                      Employee Information
-                    </h5>
-                    <div className="row">
-                      {renderFields(employeeFields, "col-md-6")}
+                  <form onSubmit={handleSubmit}>
+                    {/* Employee Info Section */}
+                    {/* Employee Info Section */}
+                    <div className="mb-4">
+                      <h5 className="text-primary mb-3 border-bottom pb-2">
+                        <i className="bi bi-person-badge me-2"></i>
+                        Employee Information
+                      </h5>
+                      <div className="row">
+                        {renderFields(employeeFields, "col-md-6")}
 
-                      {/* NTID Field */}
-                      <div className="col-md-6">
-                        <div className="mb-3">
-                          <label
-                            htmlFor="NTID"
-                            className="form-label small text-muted mb-1"
-                          >
-                            NTID{" "}
-                            {errors.NTID && (
-                              <span className="text-danger">*</span>
-                            )}
-                          </label>
-                          <Inputbox
-                            name="NTID"
-                            type="text"
-                            text="NTID"
-                            value={formData.NTID}
-                            onChange={handleChange}
-                            error={errors.NTID}
-                          />
-                          {errors.NTID && (
-                            <div
-                              id="NTIDError"
-                              className="invalid-feedback small"
+                        {/* NTID + Market Dropdown Side by Side */}
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <label
+                              htmlFor="NTID"
+                              className="form-label small text-muted mb-1"
                             >
-                              {errors.NTID}
-                            </div>
-                          )}
+                              NTID{" "}
+                              {errors.NTID && (
+                                <span className="text-danger">*</span>
+                              )}
+                            </label>
+                            <Inputbox
+                              name="NTID"
+                              type="text"
+                              text="NTID"
+                              value={formData.NTID}
+                              onChange={handleChange}
+                              error={errors.NTID}
+                            />
+                            {errors.NTID && (
+                              <div
+                                id="NTIDError"
+                                className="invalid-feedback small"
+                              >
+                                {errors.NTID}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="col-md-6">
+                          <div className="mb-3">
+                            <MarketDropdown
+                              value={formData.market_id.toString()}
+                              onChange={(value) =>
+                                setFormData((prev) => ({
+                                                                  ...prev,
+                                                                  market_id: value,
+                                                                }))
+                              }
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Market Manager Section */}
-                  <div className="mb-4">
-                    <h5 className="text-primary mb-3 border-bottom pb-2">
-                      <i className="bi bi-person-plus me-2"></i>
-                      Market Manager Information
-                    </h5>
-                    <div className="row">
-                      {renderFields(marketManagerFields, "col-md-6")}
+                    {/* Market Manager Section */}
+                    <div className="mb-4">
+                      <h5 className="text-primary mb-3 border-bottom pb-2">
+                        <i className="bi bi-person-plus me-2"></i>
+                        Market Manager Information
+                      </h5>
+                      <div className="row">
+                        {renderFields(marketManagerFields, "col-md-6")}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Performance Metrics Section */}
-                  <div className="mb-4">
-                    <h5 className="text-primary mb-3 border-bottom pb-2">
-                      <i className="bi bi-graph-up me-2"></i>
-                      Performance Metrics
-                    </h5>
-                    <div className="row">
-                      {renderFields(performanceFields, "col-md-6 col-lg-4")}
+                    {/* Performance Metrics Section */}
+                    <div className="mb-4">
+                      <h5 className="text-primary mb-3 border-bottom pb-2">
+                        <i className="bi bi-graph-up me-2"></i>
+                        Performance Metrics
+                      </h5>
+                      <div className="row">
+                        {renderFields(performanceFields, "col-md-6 col-lg-4")}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Submit Button */}
-                  <div className="d-grid mt-4">
-                    <button
-                      type="submit"
-                      className="btn btn-primary btn-lg fw-bold"
-                      disabled={isSubmitting}
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <span
-                            className="spinner-border spinner-border-sm me-2"
-                            role="status"
-                            aria-hidden="true"
-                          ></span>
-                          Processing...
-                        </>
-                      ) : (
-                        <>
-                          <i className="bi bi-send me-2"></i>
-                          Submit Evaluation
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </form>
+                    {/* Submit Button */}
+                    <div className="d-grid mt-4">
+                      <button
+                        type="submit"
+                        className="btn btn-primary btn-lg fw-bold"
+                        disabled={isSubmitting}
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <span
+                              className="spinner-border spinner-border-sm me-2"
+                              role="status"
+                              aria-hidden="true"
+                            ></span>
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <i className="bi bi-send me-2"></i>
+                            Submit Evaluation
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
     </ProtectedRoute>
   );
 }

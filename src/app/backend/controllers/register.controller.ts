@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Validate role
-    const validRoles = ["employee", "admin", "market_manager"];
+    const validRoles = ["admin", "market_manager"];
     if (!validRoles.includes(body.role)) {
       return NextResponse.json(
         { status: 400, message: "Invalid role" },
@@ -26,11 +26,11 @@ export async function POST(req: NextRequest) {
 
     // Market and NTID required for non-admin roles
     if (body.role !== "admin") {
-      if (!body.ntid || !body.market) {
+      if (!body.market) {
         return NextResponse.json(
           {
             status: 400,
-            message: "NTID and Market are required for this role",
+            message: " Market are required for this role",
           },
           { status: 400 }
         );

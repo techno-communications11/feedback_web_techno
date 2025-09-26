@@ -1,27 +1,52 @@
 // src/services/form.service.ts
 export interface Feedback {
-  comment_id:number;
-  comment: string;
+  comment_id?: number;
+  comment_text?: string | null;
+  manager_comment?: string | null;
+  comment_by?: string | null;
+  comment_created_at?: string | null;
+  first_name: string;
+  last_name: string;
+  ntid: string;
+  market_manager_firstname: string;
+  market_manager_lastname: string;
+  hours_worked: number;
+  boxes_completed: number;
+  accessories_sold: number;
+  feature_revenue: number;
+  csat: number;
+  day_35_activation_retention: number | null;
+  day_35_future_mrc_retention: number | null;
+  day_65_activation_retention: number | null;
+  day_65_future_mrc_retention: number | null;
+  day_95_activation_retention: number | null;
+  day_95_future_mrc_retention: number | null;
+  day_125_activation_retention: number | null;
+  day_125_future_mrc_retention: number | null;
+  day_155_activation_retention: number | null;
+  day_155_future_mrc_retention: number | null;
   created_at: string;
-  user: string;
+  updated_at: string;
+  form_uuid: string;
+  market_id: number;
 }
 
 interface FetchFormCommentsProps {
- applicant_uuid: string;
+ ntid: string;
   month: number;
   year: number;
 }
 
 export async function fetchFormComments({
- applicant_uuid,
+ ntid,
   month,
   year,
 }: FetchFormCommentsProps): Promise<Feedback[]> {
    const response = await fetch(
-    `/api/form?applicant_uuid=${applicant_uuid}&month=${month}&year=${year}`,
+    `/api/form?ntid=${ntid}&month=${month}&year=${year}`,
     { headers: { "Content-Type": "application/json" } }
   );
-  // console.log(response);
+
 
   if (!response.ok) {
     throw new Error(`Failed to fetch feedback: ${response.statusText}`);

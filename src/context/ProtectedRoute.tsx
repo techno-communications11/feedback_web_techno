@@ -1,4 +1,5 @@
 "use client";
+import Spinners from "@/components/Spinners";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -12,7 +13,6 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
   const { token, user, loading } = useAuth();
   const router = useRouter();
   const [allowed, setAllowed] = useState(false);
-   console.log(user,'user in protected route')
 
   useEffect(() => {
     if (!loading) {
@@ -28,9 +28,7 @@ export default function ProtectedRoute({ children, allowedRoles }: ProtectedRout
 
   if (loading || !allowed)
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: '100px' }}>
-        <div className="spinner-border"></div>
-      </div>
+      <Spinners text="loading..."/>
     );
 
   return <>{children}</>;

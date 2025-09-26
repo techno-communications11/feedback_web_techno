@@ -12,8 +12,8 @@ export const login = async (credentials: Credentials) => {
 };
 
 export const register = async (RegisterUser: RegisterUser) => {
-  const {email,password,role,ntid,market}=RegisterUser;
-  const payload={email,password,role,ntid,market};
+  const {email,password,role,market}=RegisterUser;
+  const payload={email,password,role,market};
   const res = await fetch("/api/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -33,7 +33,6 @@ export const resetPassword = async (email: string, newPassword: string) => {
   return res.json();
 };
 
-// Example usage:
-// login({ username: "user", password: "pass" }).then(data => console.log(data));
+
 
 

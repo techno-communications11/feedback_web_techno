@@ -4,9 +4,8 @@ export const INSERT_USER = `
     email,
     password,
     role,
-    ntid,
     market_id
-  ) VALUES (?, ?, ?, ?,?, ?)
+  ) VALUES (?, ?, ?, ?,?)
 `;
 
 // users.queries.ts
@@ -16,12 +15,8 @@ export const SELECT_USER_BY_EMAIL = `
   FROM users 
   WHERE email = ?
 `;
-export const GET_APPLICANT_BY_NTID = `
-  SELECT applicant_uuid,email
-  FROM users 
-  WHERE ntid = ?
-`;
- export const UPDATE_PASSWORD_BY_EMAIL = `
+
+export const UPDATE_PASSWORD_BY_EMAIL = `
   UPDATE users set password=?
   WHERE email = ?
 `;

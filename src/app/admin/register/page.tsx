@@ -12,13 +12,12 @@ const initialState: RegisterUser = {
   email: "",
   password: "",
   confirmPassword: "",
-  ntid: "",
   market: 0,
   role: "",
 };
 
 // Role options (kept as lowercase internally, displayed capitalized)
-const ROLES = ["admin", "employee", "market_manager"];
+const ROLES = ["admin", "market_manager"];
 
 // Utility to capitalize first letter
 const capitalize = (str: string) =>
@@ -59,17 +58,12 @@ const RegisterPage = () => {
     else if (!/\S+@\S+\.\S+/.test(formData.email))
       errors.email = "Email is invalid";
 
-    if (!formData.ntid.trim()) errors.ntid = "NTID is required";
     if (!formData.role) errors.role = "Role is required";
     if (!formData.password) errors.password = "Password is required";
     if (formData.password !== formData.confirmPassword)
       errors.confirmPassword = "Passwords do not match";
     if (formData.role !== "admin" && !formData.market)
       errors.market = "Market is required for this role";
-    if (formData.role !== "admin" && !formData.ntid.trim())
-      errors.ntid = "NTID is required for this role";
-    if (formData.role === "admin" && formData.ntid.trim())
-      errors.ntid = "NTID should be empty for admin role";
     if (formData.role === "admin" && formData.market)
       errors.market = "Market should be empty for admin role";
 
@@ -101,7 +95,7 @@ const RegisterPage = () => {
         setSuccessMessage("✅ User registered successfully!");
         setFormData(initialState);
       } else {
-        setFormErrors("failed registration");
+        setFormErrors({ email: "Failed registration" });
       }
     } catch (err) {
       console.error("Registration error:", err);
@@ -189,36 +183,11 @@ const RegisterPage = () => {
                 {formData.role !== "admin" && (
                   <>
                     <MarketDropdown
-                      value={formData.market}
+                      value={formData.market !== null ? String(formData.market) : ""}
                       onChange={(value) =>
-                        setFormData((prev) => ({ ...prev, market: value }))
+                        setFormData((prev) => ({ ...prev, market: Number(value) }))
                       }
                     />
-
-                    {/* NTID */}
-                    <div className="mb-3">
-                      <label htmlFor="ntid" className="form-label">
-                        NTID <span className="text-danger">*</span>
-                      </label>
-                      <Inputbox
-                        type="text"
-                        text="Enter NTID"
-                        name="ntid"
-                        value={formData.ntid}
-                        onChange={(e) =>
-                          setFormData((prev) => ({
-                            ...prev,
-                            ntid: e.target.value,
-                          }))
-                        }
-                        error={formErrors.ntid}
-                      />
-                      {formErrors.ntid && (
-                        <div className="text-danger mt-1 small">
-                          {formErrors.ntid}
-                        </div>
-                      )}
-                    </div>
                   </>
                 )}
 

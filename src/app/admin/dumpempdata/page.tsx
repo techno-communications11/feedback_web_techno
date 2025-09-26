@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { categories } from "../admin.constants";
 import { dumpFormData } from "../../services/dumpformdataService";
+import Spinners from "../../../components/Spinners";
 
 function Page() {
   const [file, setFile] = useState<File | null>(null);
@@ -37,13 +38,15 @@ function Page() {
     }
   };
 
-   const handleUpload = async () => {
+  const handleUpload = async () => {
     if (!file) return;
     setLoading(true);
     setMessage(null);
 
     const result = await dumpFormData(file);
-    setMessage(result.success ? `✅ ${result.message}` : `⚠️ ${result.message}`);
+    setMessage(
+      result.success ? `✅ ${result.message}` : `⚠️ ${result.message}`
+    );
 
     setLoading(false);
   };
@@ -199,14 +202,7 @@ function Page() {
                 }}
               >
                 {loading ? (
-                  <>
-                    <span
-                      className="spinner-border spinner-border-sm me-2"
-                      role="status"
-                      aria-hidden="true"
-                    ></span>
-                    Uploading...
-                  </>
+                  <Spinners text="Uploading..." />
                 ) : (
                   "📤 Upload & Import"
                 )}

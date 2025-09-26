@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
     }
 
     const result = await GetUserNames({ market_id });
+     console.log(result);
 
     return NextResponse.json(result, { status: result.status });
   } catch (error: any) {

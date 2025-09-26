@@ -6,7 +6,6 @@ export const submitEmployeeForm = async (
   formData: FormData
 ): Promise<ApiResponse> => {
   try {
-    console.log(formData,'ssss');
     const response = await fetch("/api/form", {
       method: "POST",
       headers: {

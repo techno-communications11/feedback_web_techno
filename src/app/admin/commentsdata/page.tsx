@@ -3,9 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { FaUser } from "react-icons/fa";
 import { fetchComments, Comment } from "../../services/readCommenstService";
-import { useAuth } from "@/context/AuthContext";
-import MarketManageredit from "@/components/MarketManageredit";
-import UserCommentEdit from "@/components/UserCommentEdit";
+import { MdOutlineAccessTimeFilled } from "react-icons/md";
+import "../../styles/commentdata.css";
 
 interface CommentsDataProps {
   applicant_uuid?: string;
@@ -18,10 +17,8 @@ export default function CommentsData({
   first_name,
   last_name,
 }: CommentsDataProps) {
-  const { user } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
-  const [comment_id, setCommentId] = useState<number | null>(null);
 
   useEffect(() => {
     const getComments = async () => {
@@ -29,32 +26,47 @@ export default function CommentsData({
       setLoading(true);
       try {
         const data = await fetchComments(applicant_uuid);
-        setComments(data);
+        setComments(data || []);
       } catch (err) {
-        console.error(err);
+        console.error("Error fetching comments:", err);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
 
     getComments();
   }, [applicant_uuid]);
 
-  
+  if (!applicant_uuid) {
+    return (
+      <p className="text-muted text-center py-3" role="alert">
+        No user selected.
+      </p>
+    );
+  }
 
-  if (!applicant_uuid) return <p className="text-muted">No user selected.</p>;
-
-  if (loading)
+  if (loading) {
     return (
       <div
         className="d-flex justify-content-center align-items-center"
         style={{ height: "100px" }}
+        role="status"
+        aria-label="Loading comments"
       >
-        <div className="spinner-border"></div>
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
       </div>
     );
+  }
 
-  if (comments.length === 0)
-    return <p className="text-muted">No comments found.</p>;
+  if (comments.length === 0) {
+    return (
+      <p className="text-muted text-center py-3" role="alert">
+        No comments found.
+      </p>
+    );
+  }
 
   // Group comments by month & year
   const groupedComments: Record<string, Comment[]> = {};
@@ -68,12 +80,26 @@ export default function CommentsData({
   });
 
   return (
-    <div className="timeline-container mt-3">
+    <div className="timeline-container mt-3 px-2 px-md-0">
       {Object.entries(groupedComments).map(([monthYear, monthComments]) => (
         <div key={monthYear} className="mb-4">
-          <h5 className="fw-bold text-primary mb-3 d-flex align-items-center">
-            <FaUser className="me-2 text-secondary" />
-            {first_name} {last_name} • {monthYear}
+          <h5
+            className="fw-bold text-primary mb-3 d-flex align-items-center flex-wrap"
+            aria-label={`Comments for ${first_name} ${last_name} in ${monthYear}`}
+          >
+            <div
+              className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
+              style={{ width: "40px", height: "40px" }}
+            >
+              <FaUser />
+            </div>
+            <span className="ms-2 text-capitalize" aria-hidden="true">
+              {first_name} {last_name}
+            </span>
+
+            <p className="mt-2">
+              <MdOutlineAccessTimeFilled /> {monthYear}
+            </p>
           </h5>
 
           <div className="timeline">
@@ -86,50 +112,46 @@ export default function CommentsData({
               return (
                 <div key={c.comment_id} className="timeline-item mb-4">
                   <div className="timeline-marker"></div>
-                  <div className="timeline-content ms-4">
+                  <div className="timeline-content ms-4 ms-md-5">
                     {/* User Comment */}
-                    <div className="d-flex align-items-start mb-2">
-                      <div className="flex-shrink-0 me-2">
-                        <div
-                          className="bg-success text-white rounded-circle d-flex align-items-center justify-content-center"
-                          style={{ width: "32px", height: "32px" }}
-                        >
-                          E
-                        </div>
+                    <div className="d-flex align-items-start mb-3">
+                      <div
+                        className="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2"
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          fontSize: "14px",
+                        }}
+                        aria-hidden="true"
+                      >
+                        E
                       </div>
-                      <div className="flex-grow-1 bg-light p-3 rounded shadow-sm position-relative">
-                        <div className="d-flex justify-content-between mb-1 align-items-center">
-                          <small className="text-muted">{commentDate}</small>
+                      <div className="flex-grow-1">
+                        <small className="text-muted">{commentDate}</small>
 
-                          {user?.role === "market_manager" && (
-                            <UserCommentEdit  comment_id={c.comment_id}/>
-                          )}
-                        </div>
-                        <p className="mb-1">{c.comment_text}</p>
+                        <p className="mb-0">{c.comment_text}</p>
                       </div>
                     </div>
 
                     {/* Manager Comment */}
                     <div className="d-flex align-items-start mb-3">
-                      <div className="flex-shrink-0 me-2">
-                        <div
-                          className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center"
-                          style={{ width: "32px", height: "32px" }}
-                        >
-                          M
-                        </div>
+                      <div
+                        className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          fontSize: "14px",
+                        }}
+                        aria-hidden="true"
+                      >
+                        M
                       </div>
-                      <div className="flex-grow-1 bg-light p-3 rounded shadow-sm position-relative">
-                        <div className="d-flex justify-content-between mb-1 align-items-center">
-                          <small className="text-muted">
-                            {manager_commented_at ||
-                              "Manager not commented yet"}
-                          </small>
-                          {user?.role === "market_manager" && (
-                            <MarketManageredit comment_id={c.comment_id} />
-                          )}
-                        </div>
-                        <p className="mb-1">
+                      <div className="flex-grow-1">
+                        <small className="text-muted">
+                          {manager_commented_at || "Manager not commented yet"}
+                        </small>
+
+                        <p className="mb-0">
                           {c.manager_comment || "No comment provided."}
                         </p>
                       </div>
@@ -141,29 +163,6 @@ export default function CommentsData({
           </div>
         </div>
       ))}
-
-      <style jsx>{`
-        .timeline {
-          position: relative;
-          margin-left: 20px;
-          border-left: 2px solid #0d6efd;
-        }
-        .timeline-item {
-          position: relative;
-        }
-        .timeline-marker {
-          position: absolute;
-          left: -10px;
-          top: 10px;
-          width: 12px;
-          height: 12px;
-          background: #0d6efd;
-          border-radius: 50%;
-        }
-        .cursor-pointer {
-          cursor: pointer;
-        }
-      `}</style>
     </div>
   );
 }

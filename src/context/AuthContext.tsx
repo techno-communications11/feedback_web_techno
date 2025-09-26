@@ -1,7 +1,6 @@
 "use client";
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
-import { useRouter } from "next/navigation";
 
 type User = {
   applicant_uuid: string;
@@ -21,12 +20,9 @@ type AuthContextType = {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const router = useRouter();
-  const [token, setToken] = useState<string | null>(null);
+    const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-   console.log(user,'user in auth')
- 
 
   // 🔥 Try refresh on mount
   useEffect(() => {
@@ -43,7 +39,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             applicant_uuid: decoded.applicant_uuid,
             email: decoded.email,
             role: decoded.role,
-            market_id: decoded.market_id
+            market_id: decoded.market_id,
           });
         } else {
           logout();
@@ -56,18 +52,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
     refresh();
   }, []);
-  
 
   const login = (token: string, user: User) => {
     setToken(token);
     setUser(user);
-    console.log(user,'user in login')
   };
 
   const logout = () => {
     setToken(null);
     setUser(null);
-    router.push("/login");
   };
 
   return (
