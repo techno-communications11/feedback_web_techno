@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { FaUser } from "react-icons/fa";
-import { fetchComments, Comment } from "../../services/readCommenstService";
 import { MdOutlineAccessTimeFilled } from "react-icons/md";
+import { fetchComments, Comment } from "../../services/readCommenstService";
 import "../../styles/commentdata.css";
 import { useAuth } from "@/context/AuthContext";
 
@@ -55,7 +55,7 @@ export default function CommentsData({
         role="status"
         aria-label="Loading comments"
       >
-        <div className="spinner-border text-primary" role="status">
+        <div className="spinner-border text-primary">
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>
@@ -99,8 +99,8 @@ export default function CommentsData({
               {first_name} {last_name}
             </span>
 
-            <p className="mt-2">
-              <MdOutlineAccessTimeFilled /> {monthYear}
+            <p className="mt-2 d-flex align-items-center">
+              <MdOutlineAccessTimeFilled className="me-1" /> {monthYear}
             </p>
           </h5>
 
@@ -115,22 +115,17 @@ export default function CommentsData({
                 <div key={c.comment_id} className="timeline-item mb-4">
                   <div className="timeline-marker"></div>
                   <div className="timeline-content ms-4 ms-md-5">
-                    {/* User Comment */}
+                    {/* Employee Comment */}
                     <div className="d-flex align-items-start mb-3">
                       <div
                         className="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2"
-                        style={{
-                          width: "32px",
-                          height: "32px",
-                          fontSize: "14px",
-                        }}
+                        style={{ width: "32px", height: "32px", fontSize: "14px" }}
                         aria-hidden="true"
                       >
                         E
                       </div>
                       <div className="flex-grow-1">
                         <small className="text-muted">{commentDate}</small>
-
                         <p className="mb-0">{c.comment_text}</p>
                       </div>
                     </div>
@@ -139,11 +134,7 @@ export default function CommentsData({
                     <div className="d-flex align-items-start mb-3">
                       <div
                         className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
-                        style={{
-                          width: "32px",
-                          height: "32px",
-                          fontSize: "14px",
-                        }}
+                        style={{ width: "32px", height: "32px", fontSize: "14px" }}
                         aria-hidden="true"
                       >
                         M
@@ -152,7 +143,6 @@ export default function CommentsData({
                         <small className="text-muted">
                           {manager_commented_at || "Manager not commented yet"}
                         </small>
-
                         <p className="mb-0">
                           {c.manager_comment || "No comment provided."}
                         </p>

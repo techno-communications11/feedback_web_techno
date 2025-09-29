@@ -19,10 +19,8 @@ export interface EmployeeForm {
 
 export interface Comment {
   comment_id: number;
-  form_id: number;
-  applicant_uuid: string;
+  form_uuid: string;
   comment_text: string;
-  version: number;
   created_at: string;
 }
 
@@ -42,32 +40,32 @@ export const fetchEmployeeData = async (
   }
 };
 
-export const fetchUncommentedEmployeeData = async (
-  form_id: string
-): Promise<EmployeeForm[]> => {
-  try {
-    const res = await fetch(
-      `/api/fetchUncommentedEmployeeData?form_id=${form_id}`
-    );
-    const json = await res.json();
-    if (!res.ok) throw new Error(json.message || "Failed to fetch data");
-    return json.data;
-  } catch (err: any) {
-    console.error("EmployeeService error:", err.message);
-    throw err;
-  }
-};
+// export const fetchUncommentedEmployeeData = async (
+//   form_id: string
+// ): Promise<EmployeeForm[]> => {
+//   try {
+//     const res = await fetch(
+//       `/api/fetchUncommentedEmployeeData?form_id=${form_id}`
+//     );
+//     const json = await res.json();
+//     if (!res.ok) throw new Error(json.message || "Failed to fetch data");
+//     return json.data;
+//   } catch (err: any) {
+//     console.error("EmployeeService error:", err.message);
+//     throw err;
+//   }
+// };
 
-export async function fetchAssignments(
-  applicant_uuid: string
-): Promise<EmployeeForm[]> {
-  const res = await fetch(
-    `/api/fetchUncommentedEmployeeData?applicant_uuid=${applicant_uuid}`
-  );
-  if (!res.ok) throw new Error("Failed to fetch assignments");
-  const result = await res.json();
-  return result.data || [];
-}
+// export async function fetchAssignments(
+//   applicant_uuid: string
+// ): Promise<EmployeeForm[]> {
+//   const res = await fetch(
+//     `/api/fetchUncommentedEmployeeData?applicant_uuid=${applicant_uuid}`
+//   );
+//   if (!res.ok) throw new Error("Failed to fetch assignments");
+//   const result = await res.json();
+//   return result.data || [];
+// }
 
 export async function addComment(
   form_id: number,
@@ -79,7 +77,7 @@ export async function addComment(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ form_id, applicant_uuid, comment_text, version: 1 }),
   });
-  console.log(res,'res');
+  console.log(res, "res");
 
   const json = await res.json(); // full API response
   console.log("Response from addComment:", json);
@@ -91,4 +89,3 @@ export async function addComment(
   // ✅ Return only the saved comment object
   return json.data;
 }
-

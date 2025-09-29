@@ -62,13 +62,13 @@ export const GET_FULL_FORM_DETAILS_BY_APPLICANT_UUUID = `
       f.*,
       c.comment_id,
       c.comment_text,
+      c.market_manager_comment
       c.created_at AS comment_created_at,
-      c.applicant_uuid AS comment_applicant_uuid
+      c.form_uuid AS comment_form_uuid
   FROM form_data f
   LEFT JOIN comments c
-    ON c.form_id = f.form_id
-   AND c.applicant_uuid = f.applicant_uuid
-  WHERE f.applicant_uuid = ?
+    ON c.form_uuid = f.form_uuid
+  WHERE f.form_uuid= ?
   ORDER BY f.created_at DESC, c.created_at ASC;
 `;
 

@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import AWS from "aws-sdk";
 import { pool } from "@/lib/db";
+import { WriteUpDocs } from "@/app/backend/types/docs.type";
 
 // Configure S3
 const s3 = new AWS.S3({
@@ -11,7 +12,8 @@ const s3 = new AWS.S3({
 });
 
 // The bucket URL prefix in your DB
-const BUCKET_URL = "https://employee-evaluation-writeups.s3.eu-north-1.amazonaws.com/";
+const BUCKET_URL =
+  "https://employee-evaluation-writeups.s3.eu-north-1.amazonaws.com/";
 
 // GET method
 export async function GET(req: NextRequest) {
@@ -24,7 +26,7 @@ export async function GET(req: NextRequest) {
     }
 
     // Query the DB for documents of this user
-    const [rows]: any = await pool.execute(
+    const [rows] = await pool.execute<WriteUpDocs[]>(
       `SELECT writeup_uuid, ntid, document_url, created_at
        FROM employee_evaluation_writeups
        WHERE ntid = ?
@@ -33,8 +35,7 @@ export async function GET(req: NextRequest) {
     );
 
     // Map rows to signed URLs and metadata
-    const docsWithUrls = rows.map((doc: any) => {
-      // Strip the bucket URL to get the S3 object key
+    const docsWithUrls = (rows as WriteUpDocs[]).map((doc) => {
       const key = doc.document_url.replace(BUCKET_URL, "");
 
       return {

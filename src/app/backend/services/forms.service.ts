@@ -6,40 +6,41 @@ import {
   GET_APPLICANT_Form_DETAILS_BY_NTID,
 } from "../quaries/forms.queries";
 import { v4 as uuidv4 } from "uuid";
+import { RowDataPacket, ResultSetHeader } from "mysql2/promise";
 
 export const createForm = async (form: FormData): Promise<ApiResponse> => {
   const connection = await pool.getConnection();
   try {
     await connection.beginTransaction();
+    let marketId: number;
 
-    // 1️⃣ Resolve market_id if a name is provided
-    let marketId: number = 0;
-    if (form.market_id !== undefined) {
-      if (typeof form.market_id === "number") {
-        marketId = form.market_id;
-      } else if (typeof form.market_id === "string") {
-        // Lookup ID by market name
-        const [marketRows]: any = await connection.execute(
-          "SELECT market_id FROM markets WHERE market_name = ?",
-          [form.market_id]
-        );
-        if (marketRows.length > 0) {
-          marketId = marketRows[0].market_id;
-        } else {
-          throw new Error(`Market not found: ${form.market_id}`);
-        }
-      }
+    if (!form.market_id) {
+      throw new Error("Market ID or name is required");
     }
 
-    // 2️⃣ Check if form already exists for this NTID in current month
-    const [rows]: any = await connection.execute(
+    // Convert numeric strings to number
+    if (typeof form.market_id === "string" && !isNaN(Number(form.market_id))) {
+      marketId = Number(form.market_id);
+    } else if (typeof form.market_id === "number") {
+      marketId = form.market_id;
+    } else {
+      // If not numeric, treat as market name and look up ID
+      const [marketRows] = await connection.execute<RowDataPacket[]>(
+        "SELECT market_id FROM markets WHERE market_name = ?",
+        [form.market_id]
+      );
+      if (marketRows.length === 0) {
+        throw new Error(`Market not found: ${form.market_id}`);
+      }
+      marketId = marketRows[0].market_id;
+    }
+
+    const [rows] = await connection.execute<RowDataPacket[]>(
       GET_APPLICANT_Form_DETAILS_BY_NTID,
       [form.NTID]
     );
 
-    console.log("Existing rows:", rows);
     if (rows.length > 0) {
-      console.log("Form already exists for this NTID this month");
       await connection.rollback();
       return {
         status: 400,
@@ -47,11 +48,8 @@ export const createForm = async (form: FormData): Promise<ApiResponse> => {
       };
     }
 
-    console.log(form, "fff");
-
-    // 3️⃣ Insert form
     const formValues = [
-      uuidv4(), // form_uuid
+      uuidv4(),
       form.first_name || null,
       form.last_name || null,
       marketId,
@@ -95,7 +93,10 @@ export const createForm = async (form: FormData): Promise<ApiResponse> => {
         : 0,
     ];
 
-    const [formResult]: any = await connection.execute(INSERT_FORM, formValues);
+    const [formResult] = await connection.execute<ResultSetHeader>(
+      INSERT_FORM,
+      formValues
+    );
     await connection.commit();
 
     return {
@@ -103,36 +104,30 @@ export const createForm = async (form: FormData): Promise<ApiResponse> => {
       message: "Form created successfully",
       data: { form_uuid: formValues[0] },
     };
-  } catch (error: any) {
+  } catch (error: unknown) {
     await connection.rollback();
-    console.error("INSERT FORM ERROR:", error);
-    return {
-      status: 500,
-      message: "Failed to create form",
-      error: error.message || "Unknown error",
-    };
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("INSERT FORM ERROR:", message);
+    return { status: 500, message: "Failed to create form", error: message };
   } finally {
     connection.release();
   }
 };
 
-export const getFormCommentsByUserMonthYear = async (form: MonthData) => {
+export const getFormCommentsByUserMonthYear = async (
+  form: MonthData
+): Promise<ApiResponse> => {
   try {
     const values = [form.ntid, form.month, form.year];
-
-    const [rows] = await pool.execute(
+    const [rows] = await pool.execute<RowDataPacket[]>(
       GET_FULL_FORM_DATA_BY_USER_MONTH_YEAR,
       values
     );
-    console.log(rows);
 
-    return {
-      status: 200,
-      message: "Data fetched successfully",
-      data: rows,
-    };
-  } catch (error: any) {
-    console.error("DB ERROR:", error);
-    return { status: 500, message: "Database error", error: error.message };
+    return { status: 200, message: "Data fetched successfully", data: rows };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    console.error("DB ERROR:", message);
+    return { status: 500, message: "Database error", error: message };
   }
 };

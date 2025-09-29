@@ -15,15 +15,16 @@ function Page() {
   const [years, setYears] = React.useState<{ year: string }[]>([]);
   React.useEffect(() => {
     const yearList = async () => {
-      const response = await getyearsService();
-      console.log(response);
-      if (response.status === 200) {
-        setYears(response.data || []);
-      }
+      const yearsArray: number[] = await getyearsService();
+      // Convert number[] to { year: string }[]
+      const formattedYears = yearsArray.map((y) => ({ year: y.toString() }));
+      setYears(formattedYears);
     };
     yearList();
   }, []);
-  const baseRoute= user?.role === "market_manager" ? "market_manager" : "admin";
+
+  const baseRoute =
+    user?.role === "market_manager" ? "market_manager" : "admin";
 
   // Handle click (optional: navigate or show modal)
   const handleYearClick = (year: string) => {
@@ -33,7 +34,7 @@ function Page() {
   };
 
   return (
-    <ProtectedRoute allowedRoles={["admin","market_manager"]}>
+    <ProtectedRoute allowedRoles={["admin", "market_manager"]}>
       <div className="container py-5">
         {/* Header */}
         <div className="text-center mb-5">

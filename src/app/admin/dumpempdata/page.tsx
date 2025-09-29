@@ -84,7 +84,7 @@ function Page() {
             <p className="text-danger">
               {" "}
               Note*: This is the required format for uploading your excel file{" "}
-              <br /> I mean to say is the column should be with the same names
+              <br /> I mean to say is the column should be with the same names or <br/> download the example file  format above the choose file  option right side 
             </p>
             {categories.map((cat, i) => (
               <div key={i} className="mb-3">
@@ -143,7 +143,7 @@ function Page() {
                 onDragOver={handleDrag}
                 onDrop={handleDrop}
                 style={{
-                  minHeight: "100px",
+                  minHeight: "80px",
                 }}
               >
                 <div className="mb-1">
@@ -168,6 +168,20 @@ function Page() {
                 <p className="small text-muted mb-1">
                   Supports: <code>.xlsx, .xls, .csv</code>
                 </p>
+                <button
+                  className="btn btn-primary my-2"
+                  onClick={() => {
+                    const link = document.createElement("a");
+                    link.href = "/example-format.xlsx"; // file path inside public folder
+                    link.download = "example-format.xlsx"; // suggested filename
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                >
+                  Download Example Format File
+                </button>
+
                 <input
                   type="file"
                   className="form-control d-none"

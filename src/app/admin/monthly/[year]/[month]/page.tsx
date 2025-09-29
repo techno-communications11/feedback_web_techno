@@ -8,10 +8,9 @@ import { BiArrowBack } from "react-icons/bi";
 import { FcHighPriority } from "react-icons/fc";
 import WriteUpsContainer from "@/components/WriteUpsContainer";
 
-
 interface User {
   actionName: string;
-  applicant_uuid: string;
+  form_uuid: string;
   ntid: string;
   first_name: string;
   last_name: string;
@@ -28,7 +27,9 @@ function Page() {
 
       {/* Text */}
       <h5 className="fw-semibold text-muted mb-2">{text}</h5>
-      <p className="text-muted mb-0">Please select an employee or action to continue</p>
+      <p className="text-muted mb-0">
+        Please select an employee or action to continue
+      </p>
     </div>
   );
 
@@ -68,7 +69,7 @@ function Page() {
                 <i className="bi bi-people me-2"></i> Team Members
               </h5>
               <div className="flex-grow-1 overflow-auto">
-                <Sidebar onSelectUser={setSelectedUser} />
+                <Sidebar onSelectUser={(user: User) => setSelectedUser(user)} />
               </div>
             </div>
           </div>

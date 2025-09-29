@@ -8,7 +8,7 @@ import { Overlay, Popover, Button } from "react-bootstrap";
 import "../app/styles/sidebar.css";
 
 interface User {
-  applicant_uuid: string;
+  form_uuid: string;
   first_name: string;
   last_name: string;
   ntid: string;

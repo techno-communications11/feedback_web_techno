@@ -34,7 +34,7 @@
 
  export interface User {
   actionName: string;
-  applicant_uuid: string;
+  form_uuid: string;
   ntid: string;
   first_name: string;
   last_name: string;

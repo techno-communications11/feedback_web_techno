@@ -2,12 +2,17 @@
 import { NextResponse } from "next/server";
 import * as XLSX from "xlsx";
 import { pool } from "@/lib/db";
-import {GET_ALL_WRITEUPS_WITH_COMMENTS_AND_MARKET} from '../../backend/quaries/downloads.quary'
+import { GET_ALL_WRITEUPS_WITH_COMMENTS_AND_MARKET } from "../../backend/quaries/downloads.quary";
+import { WriteupRow } from "@/app/backend/types/download.types";
 
 export async function GET() {
   const connection = await pool.getConnection();
   try {
-    const [rows]: any = await connection.execute(GET_ALL_WRITEUPS_WITH_COMMENTS_AND_MARKET); // replace with your actual table
+    const [rows] = await connection.execute<WriteupRow[]>(
+      GET_ALL_WRITEUPS_WITH_COMMENTS_AND_MARKET
+    ); // replace with your actual table
+
+    console.log(rows[0]);
     const worksheet = XLSX.utils.json_to_sheet(rows);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Evaluations");
