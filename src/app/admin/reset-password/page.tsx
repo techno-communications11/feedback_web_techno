@@ -70,7 +70,7 @@ const ResetPasswordPage = () => {
       setErrors(newErrors);
       return;
     }
-    const res = await resetPassword(formData.email, formData.password);
+    const res = await resetPassword(formData.email.trim().toLowerCase(), formData.password.trim())
     if (res.status !== 200) {
       setErrors({ email: res.message });
       return;

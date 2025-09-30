@@ -41,10 +41,15 @@ const Login: React.FC<LoginProps> = () => {
     setIsLoading(true);
 
     try {
-      ValidationService.validateEmail(credentials.email);
-      ValidationService.validatePassword(credentials.password);
+      const normalizedCredentials = {
+      email: credentials.email.toLowerCase().trim(),
+      password: credentials.password.trim(),
+    };
 
-      const loginResponse = await loginService(credentials); 
+       ValidationService.validateEmail(normalizedCredentials.email);
+    ValidationService.validatePassword(normalizedCredentials.password);
+
+      const loginResponse = await loginService(normalizedCredentials); 
       // console.log(loginResponse.data,'ress')
       saveAuth(loginResponse.data.token, loginResponse.data.user);
  

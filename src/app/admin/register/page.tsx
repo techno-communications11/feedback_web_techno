@@ -87,6 +87,8 @@ const RegisterPage = () => {
       setSubmitting(true);
       const payload = {
         ...formData,
+        email: formData.email.toLowerCase().trim(),
+        password: formData.password.trim(),
         market: formData.market ? Number(formData.market) : null, // convert to number
       };
       const res = await register(payload);
@@ -183,9 +185,14 @@ const RegisterPage = () => {
                 {formData.role !== "admin" && (
                   <>
                     <MarketDropdown
-                      value={formData.market !== null ? String(formData.market) : ""}
+                      value={
+                        formData.market !== null ? String(formData.market) : ""
+                      }
                       onChange={(value) =>
-                        setFormData((prev) => ({ ...prev, market: Number(value) }))
+                        setFormData((prev) => ({
+                          ...prev,
+                          market: Number(value),
+                        }))
                       }
                     />
                   </>
