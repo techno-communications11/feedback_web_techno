@@ -2,10 +2,10 @@
   "name": "feedback-app",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
+ "scripts": {
     "dev": "next dev --turbopack -p 5016",
     "build": "next build --no-lint",
-    "start": "next start",
+    "start": "next start -p 5016",
     "lint": "eslint"
   },
   "dependencies": {
