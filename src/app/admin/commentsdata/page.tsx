@@ -13,11 +13,11 @@ interface CommentsDataProps {
   last_name?: string;
 }
 
-export default function CommentsData({
+  const CommentsData: React.FC<CommentsDataProps> = ({
   ntid,
   first_name,
   last_name,
-}: CommentsDataProps) {
+}) => {
   const { commentsRefreshKey } = useAuth();
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
@@ -119,7 +119,11 @@ export default function CommentsData({
                     <div className="d-flex align-items-start mb-3">
                       <div
                         className="bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-2"
-                        style={{ width: "32px", height: "32px", fontSize: "14px" }}
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          fontSize: "14px",
+                        }}
                         aria-hidden="true"
                       >
                         E
@@ -134,7 +138,11 @@ export default function CommentsData({
                     <div className="d-flex align-items-start mb-3">
                       <div
                         className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
-                        style={{ width: "32px", height: "32px", fontSize: "14px" }}
+                        style={{
+                          width: "32px",
+                          height: "32px",
+                          fontSize: "14px",
+                        }}
                         aria-hidden="true"
                       >
                         M
@@ -157,4 +165,5 @@ export default function CommentsData({
       ))}
     </div>
   );
-}
+};
+ export default CommentsData
