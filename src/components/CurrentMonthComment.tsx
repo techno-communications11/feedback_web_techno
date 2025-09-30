@@ -14,11 +14,13 @@ import { FcComments } from "react-icons/fc";
 import '../../src/app/styles/currentmonthcomments.css'
 
 
+
+
 interface CurrentMonthCommentProps {
   ntid?: string;
   month: number;
   year: number;
-  setFormId?: (formId: number) => void;
+  setFormId?: (formId: string) => void;
 }
 
 const CurrentMonthComment: React.FC<CurrentMonthCommentProps> = ({
@@ -35,6 +37,9 @@ const CurrentMonthComment: React.FC<CurrentMonthCommentProps> = ({
   const [managerComment, setManagerComment] = useState("");
   const [submitted, setSubmitted] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState<boolean>(false);
+
+   console.log(ntid,month,year,'kkkkk')
+   
 
   const handleEmployeeSubmit = useCallback(async () => {
     if (!employeeComment.trim() || data.length === 0) return;
@@ -84,25 +89,30 @@ const CurrentMonthComment: React.FC<CurrentMonthCommentProps> = ({
   }, [managerComment, data,triggerCommentsRefresh]);
 
   const loadFeedbackData = async () => {
-    if (!ntid) return;
-    try {
-      setIsLoading(true);
-      setError(null);
-      const result = await fetchFormComments({
-        ntid,
-        month,
-        year,
-      });
-      setData(result.data || []);
-      if (result.data?.length > 0 && setFormId) {
-        setFormId(result.data[0].form_id);
-      }
-    } catch (err: any) {
-      setError(err.message || "Failed to load feedback");
-    } finally {
-      setIsLoading(false);
+  if (!ntid) return;
+  try {
+    setIsLoading(true);
+    setError(null);
+
+    const result: Feedback[] = await fetchFormComments({
+      ntid,
+      month,
+      year,
+    });
+ console.log(result,'eee')
+    // result is already an array
+    setData(result || []);
+
+    if (result.length > 0 && setFormId) {
+      setFormId(result[0].form_uuid);
     }
-  };
+  } catch (err: any) {
+    setError(err.message || "Failed to load feedback");
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   useEffect(() => {
     loadFeedbackData();
@@ -114,6 +124,7 @@ const CurrentMonthComment: React.FC<CurrentMonthCommentProps> = ({
       setSubmitted(null);
     }
   }, [data]);
+   console.log(data)
 
   return (
     <div className="current-month-comment mx-2 mx-md-4">

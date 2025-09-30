@@ -1,4 +1,3 @@
-
 import { RowDataPacket } from "mysql2/promise";
 export interface CommentData extends RowDataPacket {
   comment_id?: number;
@@ -15,4 +14,3 @@ export interface ApiResponse<T = unknown> {
   data?: T;
   error?: string;
 }
- 

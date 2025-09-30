@@ -52,7 +52,11 @@ export async function fetchFormComments({
     throw new Error(`Failed to fetch feedback: ${response.statusText}`);
   }
 
-  return response.json();
+   // Extract the `data` array from the API response
+  const result: { status: number; message: string; data: Feedback[] } =
+    await response.json();
+
+  return result.data || [];
 }
 
  // In fetchUserFeedback.ts

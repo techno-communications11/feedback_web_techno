@@ -160,7 +160,7 @@ function stripTimeUTC(d: Date | string): number {
               <h1 className="h2 fw-bold text-dark mb-1">Employee Records</h1>
               <p className="text-muted mb-0">
                 Welcome back,{" "}
-                <strong>{user?.first_name || "Team Member"}</strong> 👋
+                <strong>{"Team Member"}</strong> 👋
               </p>
             </div>
             <div className="me-auto col-8" style={{ maxWidth: "300px" }}>

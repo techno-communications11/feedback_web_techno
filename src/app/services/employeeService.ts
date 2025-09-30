@@ -15,6 +15,7 @@ export interface EmployeeForm {
   day_155_future_mrc_retention: number;
   created_at: string;
   updated_at: string;
+  comment_text?: string;
 }
 
 export interface Comment {

@@ -7,27 +7,27 @@ import { useAuth } from "@/context/AuthContext";
 import { Overlay, Popover, Button } from "react-bootstrap";
 import "../app/styles/sidebar.css";
 
-interface User {
+interface Userprop {
+  actionName: string;
   form_uuid: string;
+  ntid: string;
   first_name: string;
   last_name: string;
-  ntid: string;
-  actionName?: string;
 }
 
 interface SidebarProps {
-  onSelectUser: (user: User) => void;
+  onSelectUser: (user: Userprop) => void;
 }
 
 function Sidebar({ onSelectUser }: SidebarProps) {
   const { user } = useAuth();
   const market_id = user?.market_id || 0;
 
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<Userprop[]>([]);
   const [searchValue, setSearchValue] = useState("");
   const [showPopover, setShowPopover] = useState(false);
   const [popoverTarget, setPopoverTarget] = useState<HTMLElement | null>(null);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<Userprop | null>(null);
 
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -42,7 +42,7 @@ function Sidebar({ onSelectUser }: SidebarProps) {
     setSearchValue(e.target.value);
   };
 
-  const handleUserClick = (user: User, e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleUserClick = (user: Userprop, e: React.MouseEvent<HTMLButtonElement>) => {
     setSelectedUser(user);
     setPopoverTarget(e.currentTarget);
     setShowPopover(true); // always open popover

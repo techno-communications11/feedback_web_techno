@@ -2,7 +2,6 @@ import { pool } from "@/lib/db";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { SELECT_USER_BY_EMAIL } from "../quaries/auth.queries";
-import { cookies } from "next/headers";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_secret_key"; // should be in .env
 
@@ -22,34 +21,24 @@ export const loginUser = async (email: string, password: string) => {
       return { status: 401, message: "Invalid email or password" };
     }
 
-    // Access token (short lived)
     const accessToken = jwt.sign(
       { applicant_uuid: user.applicant_uuid, email: user.email, role: user.role, market_id: user.market_id },
       JWT_SECRET,
-      { expiresIn: "15m" } // shorter life for security
+      { expiresIn: "15m" }
     );
 
-    // Refresh token (long lived, stored in cookie)
     const refreshToken = jwt.sign(
-      { applicant_uuid: user.applicant_uuid, email: user.email,role: user.role, market_id: user.market_id },
+      { applicant_uuid: user.applicant_uuid, email: user.email, role: user.role, market_id: user.market_id },
       JWT_SECRET,
       { expiresIn: "7d" }
     );
-
-    // Store refresh token in HttpOnly cookie
-    cookies().set("refresh_token", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60, // 7 days
-      path: "/"
-    });
 
     return {
       status: 200,
       message: "Login successful",
       data: {
-        token: accessToken, // client uses this in Authorization header
+        token: accessToken,
+        refreshToken, // return refresh token to be set by route
         user: {
           applicant_uuid: user.applicant_uuid,
           email: user.email,
@@ -63,3 +52,4 @@ export const loginUser = async (email: string, password: string) => {
     return { status: 500, message: "Server error", error: error.message };
   }
 };
+

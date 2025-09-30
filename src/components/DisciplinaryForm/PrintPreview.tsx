@@ -10,10 +10,13 @@ interface PrintPreviewProps {
   selectedUser: User;
   formData: any;
   letterheadImgSrc: string;
-  
 }
 
-const PrintPreview = ({ selectedUser, formData, letterheadImgSrc }: PrintPreviewProps) => {
+const PrintPreview = ({
+  selectedUser,
+  formData,
+  letterheadImgSrc,
+}: PrintPreviewProps) => {
   const { triggerDocsRefresh } = useAuth();
   const printCanvasRef = useRef<HTMLCanvasElement>(null);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -22,17 +25,22 @@ const PrintPreview = ({ selectedUser, formData, letterheadImgSrc }: PrintPreview
   const validateFormData = (): { isValid: boolean; errors: string[] } => {
     const errors: string[] = [];
     if (!selectedUser?.ntid?.trim()) errors.push("NTID is required");
-    if (!formData?.employeeName?.trim()) errors.push("Employee name is required");
+    if (!formData?.employeeName?.trim())
+      errors.push("Employee name is required");
     if (!formData?.date?.trim()) errors.push("Date of issue is required");
-    if (!formData?.companyStatement?.trim()) errors.push("Company statement is required");
-    if (!formData?.supervisorName?.trim()) errors.push("Supervisor name is required");
+    if (!formData?.companyStatement?.trim())
+      errors.push("Company statement is required");
+    if (!formData?.supervisorName?.trim())
+      errors.push("Supervisor name is required");
     return { isValid: errors.length === 0, errors };
   };
 
   const handleUpload = async () => {
     const validation = validateFormData();
     if (!validation.isValid) {
-      alert(`Please fix the following errors:\n• ${validation.errors.join("\n• ")}`);
+      alert(
+        `Please fix the following errors:\n• ${validation.errors.join("\n• ")}`
+      );
       return;
     }
 
@@ -43,27 +51,46 @@ const PrintPreview = ({ selectedUser, formData, letterheadImgSrc }: PrintPreview
       if (!canvas) throw new Error("Canvas element not found");
 
       // Draw content to canvas
-      await drawCanvas(printCanvasRef, formData, letterheadImgSrc);
+      await drawCanvas(
+        printCanvasRef as React.RefObject<HTMLCanvasElement>,
+        formData,
+        letterheadImgSrc
+      );
 
       // Convert canvas to Blob
       const blob = await new Promise<Blob>((resolve, reject) => {
-        canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Failed to convert canvas to image"))), "image/png");
+        canvas.toBlob(
+          (b) =>
+            b
+              ? resolve(b)
+              : reject(new Error("Failed to convert canvas to image")),
+          "image/png"
+        );
       });
 
       // Prepare FormData for upload
       const uploadData = new FormData();
-      uploadData.append("file", blob, `disciplinary-${selectedUser.ntid}-${Date.now()}.png`);
+      uploadData.append(
+        "file",
+        blob,
+        `disciplinary-${selectedUser.ntid}-${Date.now()}.png`
+      );
       uploadData.append("ntid", selectedUser.ntid);
 
       // Upload to backend
-      const response = await fetch("/api/upload-doc", { method: "POST", body: uploadData });
+      const response = await fetch("/api/upload-doc", {
+        method: "POST",
+        body: uploadData,
+      });
 
       if (!response.ok) {
-        let errorData = {};
+        let errorData: any = {};
         try {
           errorData = await response.json();
         } catch {}
-        throw new Error(errorData?.message || `Upload failed: ${response.status}`);
+        throw new Error(
+          errorData?.message || `Upload failed: ${response.status}`
+        );
       }
 
       let result: any = {};
@@ -73,11 +100,13 @@ const PrintPreview = ({ selectedUser, formData, letterheadImgSrc }: PrintPreview
         result = {};
       }
 
-      console.log("✅ Document uploaded successfully:", result.url ?? "No URL returned");
+      console.log(
+        "✅ Document uploaded successfully:",
+        result.url ?? "No URL returned"
+      );
       alert("Document uploaded successfully!");
 
-    triggerDocsRefresh(); // ✅ tells DisciplinaryData to refresh
-  
+      triggerDocsRefresh(); // ✅ tells DisciplinaryData to refresh
     } catch (error: any) {
       console.error("❌ Upload error:", error);
       alert(`Failed to upload document: ${error.message || "Unknown error"}`);
@@ -88,7 +117,11 @@ const PrintPreview = ({ selectedUser, formData, letterheadImgSrc }: PrintPreview
 
   return (
     <>
-      <canvas ref={printCanvasRef} style={{ display: "none" }} aria-hidden="true" />
+      <canvas
+        ref={printCanvasRef}
+        style={{ display: "none" }}
+        aria-hidden="true"
+      />
       <div className="text-center mt-4">
         <motion.button
           type="button"
@@ -101,7 +134,11 @@ const PrintPreview = ({ selectedUser, formData, letterheadImgSrc }: PrintPreview
         >
           {isProcessing ? (
             <>
-              <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              <span
+                className="spinner-border spinner-border-sm"
+                role="status"
+                aria-hidden="true"
+              ></span>
               Uploading...
             </>
           ) : (

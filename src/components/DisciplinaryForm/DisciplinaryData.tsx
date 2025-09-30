@@ -3,7 +3,6 @@ import { Months } from "@/app/admin/admin.constants";
 import Spinners from "../Spinners";
 import { useAuth } from "@/context/AuthContext";
 
-
 interface User {
   ntid: string;
   first_name: string;
@@ -19,8 +18,6 @@ interface Document {
 interface SelectedUserProps {
   selectedUser: User | null;
 }
-
-
 
 export default function DisciplinaryData({ selectedUser }: SelectedUserProps) {
   const { docsRefreshKey } = useAuth();
@@ -68,7 +65,7 @@ export default function DisciplinaryData({ selectedUser }: SelectedUserProps) {
 
   useEffect(() => {
     fetchDocuments();
-  }, [fetchDocuments,docsRefreshKey]);
+  }, [fetchDocuments, docsRefreshKey]);
 
   const openModal = (doc: Document) => {
     setSelectedDoc(doc);
@@ -117,7 +114,7 @@ export default function DisciplinaryData({ selectedUser }: SelectedUserProps) {
       </div>
 
       {loading ? (
-        <Spinners text="loading..."/>
+        <Spinners text="loading..." />
       ) : error ? (
         <div
           style={{
@@ -133,14 +130,14 @@ export default function DisciplinaryData({ selectedUser }: SelectedUserProps) {
       ) : documents.length > 0 ? (
         <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
           {documents.map((doc) => {
-  const date = new Date(doc.createdAt);
-  const monthObj = Months.find((m) => m.id === date.getMonth() + 1);
-  const monthName = monthObj ? monthObj.Month : "";
+            const date = new Date(doc.createdAt);
+            const monthObj = Months.find((m) => m.id === date.getMonth() + 1);
+            const monthName = monthObj ? monthObj.Month : "";
 
-  const handlePrint = () => {
-    const printWindow = window.open("", "_blank");
-    if (printWindow) {
-      printWindow.document.write(`
+            const handlePrint = () => {
+              const printWindow = window.open("", "_blank");
+              if (printWindow) {
+                printWindow.document.write(`
         <html>
           <head>
             <title>Print Document</title>
@@ -155,60 +152,67 @@ export default function DisciplinaryData({ selectedUser }: SelectedUserProps) {
           </body>
         </html>
       `);
-      printWindow.document.close();
-    } else {
-      alert("Please allow pop-ups to print the document.");
-    }
-  };
+                printWindow.document.close();
+              } else {
+                alert("Please allow pop-ups to print the document.");
+              }
+            };
 
-  return (
-    <li
-      key={doc.url}
-      style={{
-        background: "#fff",
-        padding: "14px 16px",
-        borderRadius: "8px",
-        marginBottom: "12px",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-        border: "1px solid #eee",
-      }}
-    >
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          maxWidth: "70%",
-          wordBreak: "break-word",
-        }}
-        onClick={() => openModal(doc)}
-      >
-        <span style={{ color: "#E10174", fontWeight: 600, textDecoration: "underline" }}>
-          {monthName}
-        </span>
-        <span style={{ fontSize: "12px", color: "#777" }}>{date.toLocaleDateString()}</span>
-      </div>
+            return (
+              <li
+                key={doc.url}
+                style={{
+                  background: "#fff",
+                  padding: "14px 16px",
+                  borderRadius: "8px",
+                  marginBottom: "12px",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+                  border: "1px solid #eee",
+                }}
+              >
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    maxWidth: "70%",
+                    wordBreak: "break-word",
+                  }}
+                  onClick={() => openModal(doc)}
+                >
+                  <span
+                    style={{
+                      color: "#E10174",
+                      fontWeight: 600,
+                      textDecoration: "underline",
+                    }}
+                  >
+                    {monthName}
+                  </span>
+                  <span style={{ fontSize: "12px", color: "#777" }}>
+                    {date.toLocaleDateString()}
+                  </span>
+                </div>
 
-      <button
-        onClick={handlePrint}
-        style={{
-          background: "#E10174",
-          color: "#fff",
-          border: "none",
-          borderRadius: "4px",
-          padding: "6px 12px",
-          cursor: "pointer",
-          fontSize: "12px",
-        }}
-      >
-        Print
-      </button>
-    </li>
-  );
-})}
-
+                <button
+                  onClick={handlePrint}
+                  style={{
+                    background: "#E10174",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "4px",
+                    padding: "6px 12px",
+                    cursor: "pointer",
+                    fontSize: "12px",
+                  }}
+                >
+                  Print
+                </button>
+              </li>
+            );
+          })}
         </ul>
       ) : (
         <div

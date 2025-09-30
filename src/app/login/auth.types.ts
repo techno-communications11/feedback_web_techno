@@ -5,7 +5,7 @@ export interface Credentials {
 }
 
 export interface LoginProps {
-  updateAuth: (isAuth: boolean, role: string, id: string) => void;
+  updateAuth?: (isAuth: boolean, role: string, id: string) => void;
 }
 
 

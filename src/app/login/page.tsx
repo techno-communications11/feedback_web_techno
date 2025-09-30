@@ -201,7 +201,6 @@ const Login: React.FC<LoginProps> = () => {
                     onChange={handleChange}
                     placeholder="Enter password"
                     required
-                    minLength="6"
                     autoComplete="current-password"
                     style={{
                       borderColor: "#E10174",

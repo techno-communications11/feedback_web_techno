@@ -3,12 +3,11 @@
 import React, { useState } from "react";
 import { FaUser } from "react-icons/fa";
 import CurrentMonthComment from "./CurrentMonthComment";
-import Commentsdata from "../app/admin/commentsdata/page";
+import CommentsDataPage from "../components/CommentsData";
 import { Months } from "@/app/admin/admin.constants";
 import { decodeId } from "@/lib/hashids";
 import { useParams } from "next/navigation";
 import { User } from "@/constants/writeup.constants";
-
 
 interface EvaluationProps {
   selectedUser: User;
@@ -16,9 +15,8 @@ interface EvaluationProps {
 
 function Evaluation({ selectedUser }: EvaluationProps) {
   const params = useParams();
-
-  const month = decodeId(params.month as string);
-  const year = decodeId(params.year as string);
+  const month = params.month ? decodeId(params.month as string) : 0;
+  const year = params.year ? decodeId(params.year as string) : new Date().getFullYear();
   const monthObj = Months.find((m) => m.id === month);
   const monthName = monthObj ? monthObj.Month : "Unknown";
 
@@ -61,6 +59,7 @@ function Evaluation({ selectedUser }: EvaluationProps) {
         </div>
       </div>
 
+      {/* Full History */}
       <div className="col-12 col-lg-4">
         <div className="d-flex align-items-center mb-3 d-lg-none">
           <button
@@ -71,9 +70,7 @@ function Evaluation({ selectedUser }: EvaluationProps) {
           </button>
         </div>
         <div
-          className={`bg-white p-3 p-md-4 rounded-3 shadow-sm h-100 ${
-            isHistoryOpen ? "d-block" : "d-none d-lg-block"
-          }`}
+          className={`bg-white p-3 p-md-4 rounded-3 shadow-sm h-100 ${isHistoryOpen ? "d-block" : "d-none d-lg-block"}`}
         >
           <div className="sticky-top" style={{ top: "20px" }}>
             <div className="d-flex align-items-center mb-3">
@@ -90,7 +87,7 @@ function Evaluation({ selectedUser }: EvaluationProps) {
             <hr className="my-4" />
             <div className="list-group list-group-flush">
               <div className="list-group-item border-0 ps-0">
-                <Commentsdata
+                <CommentsDataPage
                   ntid={selectedUser.ntid}
                   first_name={selectedUser.first_name}
                   last_name={selectedUser.last_name}

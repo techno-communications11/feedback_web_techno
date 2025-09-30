@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Form, Spinner } from "react-bootstrap";
+import { Form } from "react-bootstrap";
 import { FORM_STYLES } from "@/constants/writeup.constants";
 import { useFormData } from "./useFormData";
 import FormInputs from "./FormInputs";
@@ -39,7 +39,7 @@ const DisciplinaryForm = ({
   return (
     <motion.div
       className="print-container card mt-4"
-      style={FORM_STYLES.container}
+       style={FORM_STYLES.container as any}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1, transition: { duration: 0.6 } }}
     >

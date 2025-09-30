@@ -8,7 +8,7 @@ import { BiArrowBack } from "react-icons/bi";
 import { FcHighPriority } from "react-icons/fc";
 import WriteUpsContainer from "@/components/WriteUpsContainer";
 
-interface User {
+interface Userprop {
   actionName: string;
   form_uuid: string;
   ntid: string;
@@ -17,7 +17,7 @@ interface User {
 }
 
 function Page() {
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<Userprop | null>(null);
 
   // Helper component to display a "no selection" message
   const NoSelectionMessage = ({ text }: { text: string }) => (
@@ -69,7 +69,7 @@ function Page() {
                 <i className="bi bi-people me-2"></i> Team Members
               </h5>
               <div className="flex-grow-1 overflow-auto">
-                <Sidebar onSelectUser={(user: User) => setSelectedUser(user)} />
+                <Sidebar onSelectUser={(user: Userprop) => setSelectedUser(user)} />
               </div>
             </div>
           </div>
